@@ -28,6 +28,12 @@ output "site_distribution_id" {
   value       = aws_cloudfront_distribution.site.id
 }
 
+# Vai na variável AWS_ROLE_ARN do repositório no GitHub (github.tf).
+output "github_deploy_role_arn" {
+  description = "ARN da role assumida pelo GitHub Actions para publicar o site"
+  value       = aws_iam_role.github_deploy_site.arn
+}
+
 output "site_url" {
   description = "Endereço público do site (domínio padrão do CloudFront)"
   value       = "https://${aws_cloudfront_distribution.site.domain_name}"
