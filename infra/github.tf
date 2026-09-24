@@ -19,7 +19,6 @@ variable "oidc_github_ja_existe" {
 }
 
 locals {
-  github_repo = "JhonatanSilva94/SprintLaser"
   github_oidc = "token.actions.githubusercontent.com"
 
   # ARN do provider, venha ele do resource (criado aqui) ou do data source.
@@ -66,10 +65,13 @@ data "aws_iam_policy_document" "github_assume_role" {
       values   = ["sts.amazonaws.com"]
     }
 
+    # O GitHub envia o "sub" com os IDs numéricos do dono e do repositório
+    # (dono@id/repo@id). Os IDs não mudam se o repositório for renomeado ou
+    # apagado e recriado com o mesmo nome. Valor conferido no CloudTrail.
     condition {
       test     = "StringEquals"
       variable = "${local.github_oidc}:sub"
-      values   = ["repo:${local.github_repo}:ref:refs/heads/main"]
+      values   = ["repo:JhonatanSilva94@321849969/SprintLaser@1386455132:ref:refs/heads/main"]
     }
   }
 }
