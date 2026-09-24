@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sprint Laser | Gravação que marca</title>
+	<meta name="description" content="Gravação a laser para medalhas, brindes e eventos.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--ink: #000000;
+			--paper: #f6f3ed;
+			--muted: #9b9a94;
+			--line: rgba(241, 238, 232, 0.18);
+			--ember: #ed1b2f;
+			--lime: #f5d400;
+		}
+
+		* { box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+		body {
+			margin: 0;
+			background: var(--ink);
+			color: var(--paper);
+			font-family: "Manrope", sans-serif;
+			overflow-x: hidden;
+		}
+
+		a { color: inherit; text-decoration: none; }
+		.shell { width: min(1240px, calc(100% - 64px)); margin: 0 auto; }
+		.mono { font-family: "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+
+		.topbar {
+			align-items: center;
+			border-bottom: 1px solid var(--line);
+			display: flex;
+			justify-content: space-between;
+			min-height: 86px;
+		}
+		.brand { align-items: center; display: flex; }
+		.brand-name { color: var(--ember); display: block; font-size: 31px; font-style: italic; font-weight: 800; letter-spacing: -.06em; line-height: .78; position: relative; transform: scaleX(1.38); transform-origin: left center; }
+		.brand-name::after { background: var(--lime); bottom: -8px; content: ""; height: 2px; left: 0; position: absolute; width: 34px; }
+		.nav { align-items: center; display: flex; gap: 34px; }
+		.nav a { color: var(--muted); font-size: 12px; transition: color .2s ease; }
+		.nav a:hover { color: var(--paper); }
+		.nav .nav-cta { background: #25d366; border: 1px solid #25d366; color: #061b0d; padding: 12px 16px; transition: background .2s ease, transform .2s ease; }
+		.nav .nav-cta:hover { background: #5ee88c; color: #061b0d; transform: translateY(-2px); }
+
+		.hero { min-height: 720px; padding: 76px 0 90px; position: relative; }
+		.hero:before {
+			background: linear-gradient(90deg, transparent 49.9%, rgba(241,238,232,.06) 50%, transparent 50.1%), linear-gradient(rgba(241,238,232,.06) 1px, transparent 1px);
+			background-size: 100% 100%, 100% 110px;
+			content: ""; inset: 0 calc((100vw - 100%) / -2); opacity: .3; pointer-events: none; position: absolute;
+		}
+		.hero-grid { align-items: end; display: grid; gap: 50px; grid-template-columns: 1.05fr .95fr; position: relative; z-index: 1; }
+		.eyebrow { color: var(--ember); font-size: 11px; margin-bottom: 28px; }
+		h1 { font-size: clamp(58px, 8vw, 116px); letter-spacing: -.085em; line-height: .88; margin: 0; max-width: 800px; }
+		h1 em { color: var(--ember); font-style: normal; }
+		.hero-copy { color: #b8b7b1; font-size: 16px; line-height: 1.65; margin: 32px 0 0; max-width: 420px; }
+		.hero-actions { align-items: center; display: flex; gap: 24px; margin-top: 40px; }
+		.button { align-items: center; background: var(--lime); color: var(--ink); display: inline-flex; font-size: 12px; font-weight: 800; gap: 14px; padding: 16px 20px; transition: transform .2s ease, background .2s ease; }
+		.button:hover { background: #ffe95b; transform: translateY(-3px); }
+		.button span { font-size: 18px; line-height: 0; }
+		.text-link { color: var(--paper); font-size: 12px; font-weight: 700; }
+
+		.visual { aspect-ratio: .9; max-width: 480px; overflow: hidden; position: relative; justify-self: end; width: 100%; }
+		.visual img { filter: grayscale(1) contrast(1.12); height: 100%; object-fit: cover; opacity: .7; width: 100%; }
+		.visual:after { background: linear-gradient(145deg, rgba(237,27,47,.34), transparent 42%, rgba(18,20,22,.6)); content: ""; inset: 0; position: absolute; }
+		.visual-label { bottom: 22px; left: 22px; position: absolute; z-index: 1; }
+		.visual-label strong { display: block; font-size: 25px; letter-spacing: -.06em; }
+		.visual-label span { color: var(--lime); font-size: 10px; }
+		.visual-corner { border-left: 1px solid var(--lime); border-top: 1px solid var(--lime); height: 38px; position: absolute; right: 18px; top: 18px; width: 38px; z-index: 1; }
+		.laser-line { animation: scan 4s ease-in-out infinite; background: var(--ember); box-shadow: 0 0 22px 4px rgba(237,27,47,.65); height: 1px; left: -10%; position: absolute; top: 45%; width: 120%; z-index: 2; }
+
+		.ticker { border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); color: var(--muted); display: flex; gap: 42px; justify-content: center; overflow: hidden; padding: 18px 0; white-space: normal; }
+		.ticker span { font-size: 10px; }
+		.ticker b { color: var(--ember); font-weight: 400; }
+		.partners { background: #080808; border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); margin-top: 34px; padding: 30px 0 32px; }
+		.partners-label { color: var(--ember); font-size: 16px; font-weight: 700; letter-spacing: .14em; margin: 0 0 22px; text-align: center; }
+		.partner-list { align-items: center; display: flex; flex-wrap: nowrap; gap: 24px 42px; justify-content: flex-start; overflow-x: auto; padding: 0 24px 8px; scrollbar-width: none; }
+		.partner-list::-webkit-scrollbar { display: none; }
+		.partner-list img { flex: 0 0 auto; height: 70px; max-width: 210px; mix-blend-mode: screen; object-fit: contain; width: auto; }
+		.partner-list img:first-child,
+		.partner-list img:nth-child(3) { height: 96px; }
+		.partner-list img:nth-child(5) { height: 30px; }
+		.partner-list img:nth-child(6) { height: 88px; }
+		.partner-list img:nth-child(7) { height: 56px; }
+		.partner-list img:nth-child(9) { height: 46px; }
+		.partner-list img:nth-child(10) { height: 44px; }
+		.intro { display: grid; gap: 70px; grid-template-columns: 1fr 1fr; padding: 120px 0; }
+		.section-number { color: var(--ember); font-size: 11px; margin-top: 8px; }
+		h2 { font-size: clamp(36px, 5vw, 65px); letter-spacing: -.07em; line-height: .95; margin: 0; max-width: 550px; }
+		.intro-text { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 410px; }
+		.intro-text p { margin: 0 0 28px; }
+		.specs { border-top: 1px solid var(--line); display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); padding-top: 22px; }
+		.specs strong { display: block; color: var(--paper); font-size: 25px; letter-spacing: -.06em; }
+		.specs span { color: var(--muted); font-size: 10px; }
+		.values { border-top: 1px solid var(--line); padding: 36px 0 120px; }
+		.values-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 54px; }
+		.values-heading h2 { font-size: clamp(32px, 4vw, 52px); }
+		.values-heading p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; max-width: 245px; }
+		.values-grid { display: grid; gap: 28px; grid-template-columns: repeat(4, 1fr); }
+		.value-item { border-top: 2px solid var(--ember); padding-top: 18px; }
+		.value-item:nth-child(even) { border-color: var(--lime); }
+		.value-number { color: var(--muted); font-size: 10px; }
+		.value-item h3 { font-size: 21px; letter-spacing: -.05em; margin: 34px 0 14px; }
+		.value-item p { color: var(--muted); font-size: 13px; line-height: 1.65; margin: 0; }
+		footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; padding: 28px 0 40px; }
+		footer .shell { align-items: center; display: flex; justify-content: space-between; }
+		.footer-main { align-items: center; display: flex; gap: 42px; }
+		.footer-nav { display: flex; gap: 22px; }
+		.footer-nav a { color: var(--paper); font-size: 11px; transition: color .2s ease; }
+		.footer-nav a:hover { color: var(--ember); }
+
+		@keyframes scan { 0%, 100% { top: 30%; opacity: .3; } 50% { top: 76%; opacity: 1; } }
+		@media (max-width: 720px) {
+			.shell { width: min(100% - 40px, 560px); }
+			.topbar { min-height: 72px; }
+			.brand-name { font-size: 28px; transform: scaleX(1.3); }
+			.nav { gap: 14px; }
+			.nav a:not(.nav-cta) { display: none; }
+			.nav .nav-cta { padding: 10px 12px; }
+			.hero { min-height: auto; padding: 62px 0 70px; }
+			.hero-grid, .intro { grid-template-columns: 1fr; }
+			.hero-grid { gap: 52px; }
+			.visual { justify-self: stretch; max-width: none; }
+			.intro { gap: 34px; padding: 80px 0; }
+			.values { padding: 28px 0 80px; }
+			.values-heading { align-items: start; flex-direction: column; gap: 20px; margin-bottom: 38px; }
+			.values-grid { grid-template-columns: repeat(2, 1fr); row-gap: 42px; }
+			.ticker { justify-content: flex-start; flex-wrap: nowrap; white-space: nowrap; }
+			.partner-list { gap: 22px 28px; padding: 0 0 6px; }
+			.partner-list img { height: 64px; max-width: 170px; }
+			.partner-list img:first-child,
+			.partner-list img:nth-child(3) { height: 86px; }
+			.partner-list img:nth-child(5) { height: 24px; }
+			.partner-list img:nth-child(6) { height: 76px; }
+			.partner-list img:nth-child(7) { height: 48px; }
+			.partner-list img:nth-child(9) { height: 38px; }
+			.partner-list img:nth-child(10) { height: 34px; }
+			footer .shell { align-items: flex-start; flex-direction: column; gap: 18px; }
+			.footer-main { align-items: flex-start; flex-direction: column; gap: 14px; }
+		}
+	</style>
+</head>
+<body>
+	<header class="shell topbar">
+			<a class="brand" href="#top" aria-label="Sprint Laser"><span class="brand-name">SPRINT<br>LASER</span></a>
+		<nav class="nav mono" aria-label="Navegação principal">
+			<a href="https://wa.me/5511939107205?text=Ol%C3%A1%2C%20gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20da%20Sprint%20Laser." class="nav-cta" target="_blank" rel="noopener noreferrer">Fale com a gente <span>↗</span></a>
+		</nav>
+	</header>
+
+	<main id="top">
+		<section class="shell hero">
+			<div class="hero-grid">
+				<div>
+					<p class="eyebrow mono">Gravação a laser // desde 2025</p>
+					<h1>O detalhe<br>que <em>fica.</em></h1>
+					<p class="hero-copy">Medalhas, brindes e objetos de eventos transformados em lembranças que atravessam a linha de chegada.</p>
+					<div class="hero-actions">
+						<a class="button" href="#processo">Conheça a SprintLaser <span>↗</span></a>
+					</div>
+				</div>
+				<div class="visual" aria-label="Detalhe de uma máquina industrial de gravação">
+					  <img src="https://www.cloudraylaser.com/cdn/shop/articles/793A0598.jpg?v=1770878556&width=1600" alt="Pessoa operando uma máquina de gravação a laser da Cloudray">
+					<span class="laser-line"></span>
+					<span class="visual-corner"></span>
+					<div class="visual-label"><strong>MADE TO<br>BE REMEMBERED</strong><span class="mono">precisão / matéria / história</span></div>
+				</div>
+			</div>
+		</section>
+
+		<div class="ticker mono" aria-hidden="true">
+			<span>GRAVAÇÃO PERSONALIZADA</span><b>✦</b><span>MEDALHAS DE CORRIDA</span><b>✦</b><span>BRINDES CORPORATIVOS</span><b>✦</b><span>PEÇAS QUE MARCAM</span><b>✦</b>
+		</div>
+
+		<section class="partners" aria-label="Parceiros Sprint Laser">
+			<div class="shell">
+				<p class="partners-label mono">Parceiros</p>
+				<div class="partner-list" data-partners-track>
+					<img src="assets/Unimed.png" alt="Unimed">
+					<img src="assets/Floractive.png" alt="Floractive">
+					<img src="assets/Banco do Brasil.svg" alt="Banco do Brasil">
+					<img src="assets/Corinthians.svg" alt="Corinthians">
+					<img src="assets/Sicoob.svg" alt="Sicoob">
+					<img src="assets/Moai Sports.png" alt="Moai Sports">
+					<img src="assets/JF SPORTS.svg" alt="JF Sports">
+					<img src="assets/CIRCUITO POPULAR.svg" alt="Circuito Popular de Rua">
+					<img src="assets/TUBIG SPORTS.svg" alt="TUBIG Sports">
+					<img src="assets/SONDA.svg" alt="Sonda">
+				</div>
+			</div>
+		</section>
+
+		<section class="shell intro" id="processo">
+			<div><p class="section-number mono">01 — Criação</p><h2>Nascemos na rua. Ficamos na memória.</h2></div>
+			<div class="intro-text"><p>Nascemos nas corridas de rua e expandimos para eventos corporativos, transformando produtos em lembranças únicas.</p><p>Em cada gravação, existe a oportunidade de tornar um momento mais pessoal, mais marcante e impossível de repetir.</p><div class="specs"><div><strong>2025</strong><span class="mono">ano de criação</span></div><div><strong>∞</strong><span class="mono">possibilidades</span></div><div><strong>01</strong><span class="mono">peça por vez</span></div></div></div>
+		</section>
+
+		<section class="shell values" id="cultura">
+			<div class="values-heading"><div><p class="section-number mono">02 — O que nos move</p><h2>Uma marca feita<br>para marcar.</h2></div><p>Da primeira ideia ao último detalhe, criamos experiências com intenção.</p></div>
+			<div class="values-grid">
+				<article class="value-item"><span class="value-number mono">01 / 04</span><h3>Criação</h3><p>Nascemos nas corridas de rua e expandimos para eventos corporativos, transformando produtos em lembranças únicas.</p></article>
+				<article class="value-item"><span class="value-number mono">02 / 04</span><h3>Cultura</h3><p>Valorizamos a inovação, a qualidade e a experiência de cada pessoa.</p></article>
+				<article class="value-item"><span class="value-number mono">03 / 04</span><h3>Métodos</h3><p>Unimos tecnologia a laser, planejamento e personalização ao vivo para criar experiências exclusivas.</p></article>
+				<article class="value-item"><span class="value-number mono">04 / 04</span><h3>Objetivos</h3><p>Conectamos pessoas e marcas por meio de experiências personalizadas que geram valor e deixam lembranças.</p></article>
+			</div>
+		</section>
+	</main>
+
+	<footer id="contato"><div class="shell"><div class="footer-main"><span class="mono">SPRINT LASER / GRAVAÇÃO COM PRESENÇA</span><nav class="footer-nav mono" aria-label="Outras páginas"><a href="cadastro.html">Corredores</a><a href="gravador.html">Gravação</a></nav></div><span class="mono">© 2025 · imagem: Cloudray Laser</span></div></footer>
+	<script>
+		const partnersTrack = document.querySelector("[data-partners-track]");
+		let partnerScroll = 0;
+
+		const movePartners = () => {
+			if (partnersTrack.scrollWidth > partnersTrack.clientWidth) {
+				partnerScroll += 0.08;
+				if (partnerScroll >= partnersTrack.scrollWidth - partnersTrack.clientWidth) partnerScroll = 0;
+				partnersTrack.scrollLeft = partnerScroll;
+			}
+			requestAnimationFrame(movePartners);
+		};
+
+		movePartners();
+	</script>
+</body>
+</html>

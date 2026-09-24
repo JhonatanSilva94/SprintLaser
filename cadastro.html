@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cadastro de corredor | Sprint Laser</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+		:root { --ink: #000; --paper: #f6f3ed; --muted: #9b9a94; --line: rgba(241,238,232,.18); --ember: #ed1b2f; --lime: #f5d400; }
+		* { box-sizing: border-box; }
+		body { background: var(--ink); color: var(--paper); font-family: "Manrope", sans-serif; margin: 0; min-height: 100vh; }
+		a { color: inherit; text-decoration: none; }
+		.shell { margin: 0 auto; width: min(100% - 40px, 620px); }
+		.mono { font-family: "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+		.topbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; min-height: 76px; }
+		.brand { color: var(--ember); font-size: 25px; font-style: italic; font-weight: 800; letter-spacing: -.06em; line-height: .78; transform: scaleX(1.22); transform-origin: left center; }
+		.back-link { color: var(--muted); font-size: 11px; }
+		main { padding: 62px 0 80px; }
+		.eyebrow { color: var(--ember); font-size: 11px; margin: 0 0 22px; }
+		h1 { font-size: clamp(42px, 12vw, 76px); letter-spacing: -.08em; line-height: .9; margin: 0; max-width: 560px; }
+		.intro { color: var(--muted); font-size: 15px; line-height: 1.65; margin: 26px 0 42px; max-width: 470px; }
+		.form-panel { border-top: 1px solid var(--line); padding-top: 28px; }
+		.field { display: block; margin-bottom: 24px; }
+		.field span { color: var(--paper); display: block; font-size: 11px; font-weight: 700; margin-bottom: 10px; }
+		input { background: #090909; border: 1px solid var(--line); border-radius: 0; color: var(--paper); font: 500 18px "Manrope", sans-serif; outline: none; padding: 16px; width: 100%; }
+		input:focus { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime); }
+		input::placeholder { color: #5f5e59; }
+		#runner-name { text-transform: uppercase; }
+		.time-preview { color: var(--lime); display: block; font: 11px "DM Mono", monospace; margin-top: 10px; min-height: 16px; }
+		.engraving-preview { border-left: 2px solid var(--lime); margin: 28px 0 26px; padding: 16px 18px; }
+		.engraving-label { color: var(--lime); display: block; font: 11px "DM Mono", monospace; margin-bottom: 9px; }
+		.engraving-value { color: var(--paper); display: block; font-size: 20px; font-weight: 800; letter-spacing: -.04em; min-height: 25px; overflow-wrap: anywhere; }
+		.error { color: var(--ember); font-size: 12px; line-height: 1.4; min-height: 18px; }
+		.button { background: var(--lime); border: 0; color: var(--ink); cursor: pointer; display: inline-flex; font: 800 12px "Manrope", sans-serif; letter-spacing: .02em; padding: 17px 22px; text-transform: uppercase; }
+		.button:hover { background: #ffe95b; }
+		.result { background: #080808; border: 2px solid var(--lime); display: none; margin-top: 42px; padding: 42px 24px 46px; position: relative; text-align: center; }
+		.result.is-visible { display: block; }
+		.result::before { background: var(--ember); content: ""; height: 5px; left: 0; position: absolute; right: 0; top: 0; }
+		.result-label { color: var(--lime); font-size: 12px; font-weight: 700; margin: 0 0 20px; }
+		.result .code { color: var(--paper); font-size: clamp(128px, 38vw, 220px); font-weight: 800; letter-spacing: -.12em; line-height: .78; margin: 0 0 34px; }
+		.result p { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 390px; }
+		.result .result-message { border-top: 1px solid var(--line); color: var(--paper); font-size: 16px; font-weight: 700; padding-top: 22px; }
+		.result strong { color: var(--paper); }
+		footer { color: var(--muted); font-size: 10px; padding: 0 0 34px; }
+		@media (max-width: 480px) { .topbar { min-height: 70px; } main { padding-top: 48px; } .brand { font-size: 22px; } .back-link { font-size: 10px; } }
+	</style>
+</head>
+<body>
+	<header class="shell topbar">
+		<a class="brand" href="index.html" aria-label="Sprint Laser">SPRINT<br>LASER</a>
+		<a class="back-link mono" href="index.html">Início ↗</a>
+	</header>
+	<main class="shell">
+		<p class="eyebrow mono">Cadastro // corredor</p>
+		<h1>Seu detalhe.<br>Sua chegada.</h1>
+		<p class="intro">Preencha seus dados para receber o código que será usado na fila de gravação.</p>
+		<section class="form-panel" aria-label="Cadastro do corredor">
+			<form id="registration-form" novalidate>
+				<label class="field"><span>NOME <small class="mono">(máx. 15 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="15" placeholder="Como devemos gravar?" required></label>
+				<label class="field"><span>TEMPO DE PROVA <small class="mono">(somente números)</small></span><input id="runner-time" name="time" inputmode="numeric" maxlength="6" placeholder="Ex: 3045 pra 00:35:45" pattern="[0-9]+" required><small class="time-preview" id="time-preview" aria-live="polite">Tempo convertido: --:--:--</small></label>
+				<div class="engraving-preview" aria-live="polite"><span class="engraving-label">COMO VAI SER GRAVADO:</span><strong class="engraving-value" id="engraving-value">Preencha nome e tempo</strong></div>
+				<p class="error" id="form-error" role="alert"></p>
+				<button class="button" type="submit">Aplicar <span>↗</span></button>
+			</form>
+			<section class="result" id="registration-result" aria-live="polite">
+				<p class="result-label mono">Seu código de gravação</p>
+				<p class="code" id="runner-code">01</p>
+				<p class="result-message">Tire um print desta tela e apresente o código na fila de gravação.</p>
+			</section>
+		</section>
+	</main>
+	<footer class="shell mono">Sprint Laser / experiência que fica</footer>
+	<script src="config.js"></script>
+	<script>
+		function converterTempo(valor) {
+			const digitos = valor.replace(/\D/g, "");
+			if (!digitos) return null;
+			const segundos = Number(digitos.slice(-2).padStart(2, "0"));
+			const minutos = Number(digitos.slice(-4, -2).padStart(2, "0"));
+			const horas = Number(digitos.slice(0, -4) || 0);
+			if (segundos > 59 || minutos > 59) return null;
+			return [horas, minutos, segundos].map(valor => String(valor).padStart(2, "0")).join(":");
+		}
+
+		// Envia o cadastro para a API e devolve { codigo, nome, tempo }.
+		// Se a API recusar, lança um Error com a mensagem dela; se a rede falhar,
+		// o próprio fetch lança um TypeError.
+		async function cadastrarCorredor(nome, tempo) {
+			const resposta = await fetch(`${API_URL}/cadastro`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ nome, tempo })
+			});
+			const dados = await resposta.json().catch(() => ({}));
+			if (!resposta.ok) throw new Error(dados.erro || "Não foi possível concluir o cadastro. Tente novamente.");
+			return dados;
+		}
+
+		const form = document.querySelector("#registration-form");
+		const error = document.querySelector("#form-error");
+		const result = document.querySelector("#registration-result");
+		const code = document.querySelector("#runner-code");
+		const timeField = document.querySelector("#runner-time");
+		const timePreview = document.querySelector("#time-preview");
+		const nameField = document.querySelector("#runner-name");
+		const engravingValue = document.querySelector("#engraving-value");
+		const submitButton = form.querySelector("button[type=submit]");
+
+		function atualizarPreviaGravacao() {
+			const nome = nameField.value.trim().toUpperCase();
+			const tempo = converterTempo(timeField.value);
+			engravingValue.textContent = nome && tempo ? `${nome} ${tempo}` : "Preencha nome e tempo";
+		}
+
+		nameField.addEventListener("input", () => {
+			nameField.value = nameField.value.slice(0, 15).toUpperCase();
+			atualizarPreviaGravacao();
+		});
+
+		timeField.addEventListener("input", () => {
+			timeField.value = timeField.value.replace(/\D/g, "").slice(0, 6);
+			const tempoConvertido = converterTempo(timeField.value);
+			timePreview.textContent = tempoConvertido ? `Tempo convertido: ${tempoConvertido}` : "Tempo convertido: --:--:--";
+			atualizarPreviaGravacao();
+		});
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			if (submitButton.disabled) return;
+			const nome = nameField.value.trim().slice(0, 15).toUpperCase();
+			const campoTempo = timeField;
+			const tempo = converterTempo(campoTempo.value.trim());
+			result.classList.remove("is-visible");
+			if (!nome) { error.textContent = "Digite seu nome para continuar."; return; }
+			if (!tempo) { error.textContent = "Digite o tempo em números, por exemplo 3045 para 00:30:45."; return; }
+			campoTempo.value = tempo;
+			error.textContent = "";
+			// Bloqueia o botão até a API responder, para um clique duplo não gerar dois códigos.
+			submitButton.disabled = true;
+			try {
+				const corredor = await cadastrarCorredor(nome, tempo);
+				code.textContent = corredor.codigo;
+				result.classList.add("is-visible");
+				result.scrollIntoView({ behavior: "smooth", block: "center" });
+			} catch (erro) {
+				error.textContent = erro instanceof TypeError
+					? "Não conseguimos conectar. Verifique sua internet e tente novamente."
+					: erro.message;
+			} finally {
+				submitButton.disabled = false;
+			}
+		});
+	</script>
+</body>
+</html>

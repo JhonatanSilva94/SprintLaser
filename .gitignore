@@ -1,0 +1,12 @@
+# Terraform: state local (contém IDs e dados da infra) e providers baixados
+terraform.tfstate*
+.terraform/
+
+# Zips gerados pelo archive_file a partir de lambdas/
+infra/build/
+
+# Variáveis do Terraform (podem ter valores sensíveis)
+*.tfvars
+
+# Cache do Python
+__pycache__/

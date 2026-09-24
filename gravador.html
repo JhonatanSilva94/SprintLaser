@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gravação | Sprint Laser</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+		:root { --ink: #000; --paper: #f6f3ed; --muted: #9b9a94; --line: rgba(241,238,232,.18); --ember: #ed1b2f; --lime: #f5d400; }
+		* { box-sizing: border-box; }
+		body { background: var(--ink); color: var(--paper); font-family: "Manrope", sans-serif; margin: 0; min-height: 100vh; }
+		a { color: inherit; text-decoration: none; }
+		.shell { margin: 0 auto; width: min(100% - 40px, 900px); }
+		.mono { font-family: "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+		.topbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; min-height: 76px; }
+		.brand { color: var(--ember); font-size: 25px; font-style: italic; font-weight: 800; letter-spacing: -.06em; line-height: .78; transform: scaleX(1.22); transform-origin: left center; }
+		.back-link { color: var(--muted); font-size: 11px; }
+		main { padding: 76px 0 100px; }
+		.eyebrow { color: var(--lime); font-size: 11px; margin: 0 0 22px; }
+		h1 { font-size: clamp(48px, 9vw, 92px); letter-spacing: -.08em; line-height: .88; margin: 0; }
+		.intro { color: var(--muted); font-size: 15px; line-height: 1.65; margin: 28px 0 46px; max-width: 470px; }
+		.search-row { align-items: end; border-top: 1px solid var(--line); display: grid; gap: 18px; grid-template-columns: 1fr auto; padding-top: 28px; }
+		.field span { color: var(--paper); display: block; font-size: 11px; font-weight: 700; margin-bottom: 10px; }
+		input { background: #090909; border: 1px solid var(--line); border-radius: 0; color: var(--paper); font: 700 22px "DM Mono", monospace; letter-spacing: .08em; outline: none; padding: 15px 16px; text-transform: uppercase; width: 100%; }
+		input:focus { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime); }
+		input::placeholder { color: #5f5e59; }
+		.button { background: var(--lime); border: 0; color: var(--ink); cursor: pointer; font: 800 12px "Manrope", sans-serif; padding: 17px 22px; text-transform: uppercase; }
+		.button:hover { background: #ffe95b; }
+		.status { color: var(--ember); font-size: 13px; min-height: 22px; padding-top: 14px; }
+		.runner-card { border-left: 2px solid var(--ember); display: none; margin-top: 46px; padding: 26px 28px 30px; }
+		.runner-card.is-visible { display: block; }
+		.card-label { color: var(--muted); font-size: 10px; margin: 0 0 18px; }
+		.runner-name { font-size: clamp(32px, 8vw, 68px); letter-spacing: -.07em; line-height: .95; margin: 0 0 28px; overflow-wrap: anywhere; }
+		.runner-time { color: var(--lime); font: 500 clamp(32px, 8vw, 66px) "DM Mono", monospace; letter-spacing: -.06em; margin: 0; }
+		footer { color: var(--muted); font-size: 10px; padding: 0 0 34px; }
+		@media (max-width: 620px) { .topbar { min-height: 70px; } .brand { font-size: 22px; } main { padding-top: 52px; } .search-row { align-items: stretch; grid-template-columns: 1fr; } .button { width: 100%; } .runner-card { margin-top: 34px; padding: 22px 20px 26px; } }
+	</style>
+</head>
+<body>
+	<header class="shell topbar">
+		<a class="brand" href="index.html" aria-label="Sprint Laser">SPRINT<br>LASER</a>
+		<a class="back-link mono" href="index.html">Início ↗</a>
+	</header>
+	<main class="shell">
+		<p class="eyebrow mono">Gravação // fila de produção</p>
+		<h1>Encontre<br>o corredor.</h1>
+		<p class="intro">Digite o código apresentado pelo corredor para conferir os dados da gravação.</p>
+		<form id="search-form" novalidate>
+			<div class="search-row">
+				<label class="field"><span>CORREDOR NÚMERO:</span><input id="runner-code" inputmode="numeric" maxlength="2" placeholder="01" required></label>
+				<button class="button" type="submit">Buscar <span>↗</span></button>
+			</div>
+			<p class="status" id="search-status" role="alert"></p>
+		</form>
+		<section class="runner-card" id="runner-card" aria-live="polite">
+			<p class="card-label mono">Dados para gravação</p>
+			<h2 class="runner-name" id="runner-name"></h2>
+			<p class="runner-time" id="runner-time"></p>
+		</section>
+	</main>
+	<footer class="shell mono">Sprint Laser / produção em movimento</footer>
+	<script src="config.js"></script>
+	<script>
+		// Busca o corredor na API. Devolve { codigo, nome, tempo }, ou null se a API
+		// responder 404. Outros erros viram Error; falha de rede vira TypeError (do fetch).
+		async function buscarCorredor(codigo) {
+			const resposta = await fetch(`${API_URL}/corredor/${encodeURIComponent(codigo)}`);
+			if (resposta.status === 404) return null;
+			if (!resposta.ok) throw new Error("Não foi possível buscar o corredor. Tente novamente.");
+			return resposta.json();
+		}
+
+		const form = document.querySelector("#search-form");
+		const input = document.querySelector("#runner-code");
+		const status = document.querySelector("#search-status");
+		const card = document.querySelector("#runner-card");
+		const name = document.querySelector("#runner-name");
+		const time = document.querySelector("#runner-time");
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const codigo = input.value.trim();
+			card.classList.remove("is-visible");
+			if (!/^\d{1,2}$/.test(codigo)) {
+				status.textContent = "Não encontramos um corredor com esse código.";
+				return;
+			}
+			status.textContent = "";
+			try {
+				const corredor = await buscarCorredor(codigo);
+				if (!corredor) {
+					status.textContent = "Não encontramos um corredor com esse código.";
+					return;
+				}
+				name.textContent = corredor.nome;
+				time.textContent = corredor.tempo;
+				card.classList.add("is-visible");
+			} catch (erro) {
+				status.textContent = erro instanceof TypeError
+					? "Não conseguimos conectar. Verifique sua internet e tente novamente."
+					: erro.message;
+			}
+		});
+	</script>
+</body>
+</html>
