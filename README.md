@@ -18,6 +18,6 @@ Ao fim de cada corrida, os dados são apagados.
 ## Tecnologias
 
 - **Site:** HTML, CSS e JavaScript
-- **Nuvem:** AWS (S3, CloudFront, API Gateway, Lambda, DynamoDB e Route 53)
+- **AWS:** S3, CloudFront, API Gateway, Lambda, DynamoDB e Route 53
 - **Back-end:** Python
 - **Infraestrutura como código:** Terraform
