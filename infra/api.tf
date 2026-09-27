@@ -52,12 +52,14 @@ resource "aws_apigatewayv2_route" "cadastro" {
   target    = "integrations/${aws_apigatewayv2_integration.cadastro.id}"
 }
 
-# GET /corredor/{codigo} -> Lambda de busca.
-# {codigo} é um parâmetro de caminho; chega no Python em
-# event["pathParameters"]["codigo"].
+# GET /corredor/{numero_camisa} -> Lambda de busca.
+# {numero_camisa} é um parâmetro de caminho; chega no Python em
+# event["pathParameters"]["numero_camisa"].
+# MUDANÇA: o parâmetro se chamava {codigo}. O nome aqui precisa bater com o
+# que a Lambda lê; a URL pública continua no formato /corredor/150.
 resource "aws_apigatewayv2_route" "busca" {
   api_id    = aws_apigatewayv2_api.api.id
-  route_key = "GET /corredor/{codigo}"
+  route_key = "GET /corredor/{numero_camisa}"
   target    = "integrations/${aws_apigatewayv2_integration.busca.id}"
 }
 

@@ -40,6 +40,13 @@
 		.result::before { background: var(--ember); content: ""; height: 5px; left: 0; position: absolute; right: 0; top: 0; }
 		.result-label { color: var(--lime); font-size: 12px; font-weight: 700; margin: 0 0 20px; }
 		.result .code { color: var(--paper); font-size: clamp(128px, 38vw, 220px); font-weight: 800; letter-spacing: -.12em; line-height: .78; margin: 0 0 34px; }
+		/* Número da camisa pode ter até 6 dígitos; com 4 ou mais, o tamanho acima estoura a largura do celular. */
+		.result .code.is-long { font-size: clamp(64px, 19vw, 140px); }
+		/* Nome e tempo abaixo do número, para o corredor conferir antes de ir para a fila. */
+		.result-details { display: grid; gap: 16px; margin: 0 auto 30px; max-width: 390px; }
+		.result-details dt { color: var(--lime); font-size: 11px; margin-bottom: 6px; }
+		.result-details dd { color: var(--paper); font-size: 24px; font-weight: 800; letter-spacing: -.04em; margin: 0; overflow-wrap: anywhere; }
+		.result-details .result-time { font-family: "DM Mono", monospace; font-weight: 500; letter-spacing: 0; }
 		.result p { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 390px; }
 		.result .result-message { border-top: 1px solid var(--line); color: var(--paper); font-size: 16px; font-weight: 700; padding-top: 22px; }
 		.result strong { color: var(--paper); }
@@ -55,19 +62,28 @@
 	<main class="shell">
 		<p class="eyebrow mono">Cadastro // corredor</p>
 		<h1>Seu detalhe.<br>Sua chegada.</h1>
-		<p class="intro">Preencha seus dados para receber o código que será usado na fila de gravação.</p>
+		<p class="intro">Preencha seus dados. Na fila de gravação, basta informar o número da sua camisa.</p>
 		<section class="form-panel" aria-label="Cadastro do corredor">
 			<form id="registration-form" novalidate>
+				<!-- NOVO: o número da camisa substitui o código gerado pelo sistema. inputmode="numeric" abre o teclado numérico no celular. -->
+				<label class="field"><span>NÚMERO DA CAMISA <small class="mono">(somente números)</small></span><input id="runner-bib" name="numero_camisa" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Ex: 150" pattern="[0-9]*" required></label>
 				<label class="field"><span>NOME <small class="mono">(máx. 15 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="15" placeholder="Como devemos gravar?" required></label>
 				<label class="field"><span>TEMPO DE PROVA <small class="mono">(somente números)</small></span><input id="runner-time" name="time" inputmode="numeric" maxlength="6" placeholder="Ex: 3045 pra 00:35:45" pattern="[0-9]+" required><small class="time-preview" id="time-preview" aria-live="polite">Tempo convertido: --:--:--</small></label>
 				<div class="engraving-preview" aria-live="polite"><span class="engraving-label">COMO VAI SER GRAVADO:</span><strong class="engraving-value" id="engraving-value">Preencha nome e tempo</strong></div>
 				<p class="error" id="form-error" role="alert"></p>
 				<button class="button" type="submit">Aplicar <span>↗</span></button>
 			</form>
+			<!-- MUDANÇA: antes esta tela mostrava o código sequencial gerado pela API.
+			     Agora é uma confirmação: número da camisa em destaque + nome e tempo,
+			     exatamente como foram salvos, para o corredor conferir. -->
 			<section class="result" id="registration-result" aria-live="polite">
-				<p class="result-label mono">Seu código de gravação</p>
-				<p class="code" id="runner-code">01</p>
-				<p class="result-message">Tire um print desta tela e apresente o código na fila de gravação.</p>
+				<p class="result-label mono">Cadastro confirmado // camisa</p>
+				<p class="code" id="confirm-bib"></p>
+				<dl class="result-details">
+					<div><dt class="mono">Nome</dt><dd id="confirm-name"></dd></div>
+					<div><dt class="mono">Tempo</dt><dd class="result-time" id="confirm-time"></dd></div>
+				</dl>
+				<p class="result-message">Confira seus dados. Na fila de gravação, informe o número da sua camisa. Se algo estiver errado, procure a equipe de gravação.</p>
 			</section>
 		</section>
 	</main>
@@ -84,14 +100,20 @@
 			return [horas, minutos, segundos].map(valor => String(valor).padStart(2, "0")).join(":");
 		}
 
-		// Envia o cadastro para a API e devolve { codigo, nome, tempo }.
-		// Se a API recusar, lança um Error com a mensagem dela; se a rede falhar,
-		// o próprio fetch lança um TypeError.
-		async function cadastrarCorredor(nome, tempo) {
+		// NOVO: mesma normalização da API: "0150" e "150" são a mesma camisa.
+		// Devolve "" se não sobrar nenhum dígito diferente de zero.
+		function normalizarCamisa(valor) {
+			return valor.replace(/\D/g, "").replace(/^0+/, "");
+		}
+
+		// Envia o cadastro para a API e devolve { numero_camisa, nome, tempo }.
+		// Se a API recusar, lança um Error com a mensagem dela (inclusive o 409
+		// "Camisa já cadastrada..."); se a rede falhar, o próprio fetch lança um TypeError.
+		async function cadastrarCorredor(numeroCamisa, nome, tempo) {
 			const resposta = await fetch(`${API_URL}/cadastro`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ nome, tempo })
+				body: JSON.stringify({ numero_camisa: numeroCamisa, nome, tempo })
 			});
 			const dados = await resposta.json().catch(() => ({}));
 			if (!resposta.ok) throw new Error(dados.erro || "Não foi possível concluir o cadastro. Tente novamente.");
@@ -101,7 +123,10 @@
 		const form = document.querySelector("#registration-form");
 		const error = document.querySelector("#form-error");
 		const result = document.querySelector("#registration-result");
-		const code = document.querySelector("#runner-code");
+		const bibField = document.querySelector("#runner-bib");
+		const confirmBib = document.querySelector("#confirm-bib");
+		const confirmName = document.querySelector("#confirm-name");
+		const confirmTime = document.querySelector("#confirm-time");
 		const timeField = document.querySelector("#runner-time");
 		const timePreview = document.querySelector("#time-preview");
 		const nameField = document.querySelector("#runner-name");
@@ -113,6 +138,11 @@
 			const tempo = converterTempo(timeField.value);
 			engravingValue.textContent = nome && tempo ? `${nome} ${tempo}` : "Preencha nome e tempo";
 		}
+
+		// NOVO: o campo da camisa aceita só dígitos (teclados de desktop deixam digitar letras).
+		bibField.addEventListener("input", () => {
+			bibField.value = bibField.value.replace(/\D/g, "").slice(0, 6);
+		});
 
 		nameField.addEventListener("input", () => {
 			nameField.value = nameField.value.slice(0, 15).toUpperCase();
@@ -129,19 +159,27 @@
 		form.addEventListener("submit", async (event) => {
 			event.preventDefault();
 			if (submitButton.disabled) return;
+			const numeroCamisa = normalizarCamisa(bibField.value);
 			const nome = nameField.value.trim().slice(0, 15).toUpperCase();
 			const campoTempo = timeField;
 			const tempo = converterTempo(campoTempo.value.trim());
 			result.classList.remove("is-visible");
+			if (!numeroCamisa) { error.textContent = "Digite o número da sua camisa para continuar."; return; }
 			if (!nome) { error.textContent = "Digite seu nome para continuar."; return; }
 			if (!tempo) { error.textContent = "Digite o tempo em números, por exemplo 3045 para 00:30:45."; return; }
 			campoTempo.value = tempo;
 			error.textContent = "";
-			// Bloqueia o botão até a API responder, para um clique duplo não gerar dois códigos.
+			// Bloqueia o botão até a API responder, para um clique duplo não enviar dois cadastros.
+			// (Com a camisa como chave o segundo já seria recusado com 409, mas o
+			// corredor veria o erro "já cadastrada" mesmo tendo dado certo.)
 			submitButton.disabled = true;
 			try {
-				const corredor = await cadastrarCorredor(nome, tempo);
-				code.textContent = corredor.codigo;
+				const corredor = await cadastrarCorredor(numeroCamisa, nome, tempo);
+				// MUDANÇA: mostra o que a API salvou (já normalizado), e não o que foi digitado.
+				confirmBib.textContent = corredor.numero_camisa;
+				confirmBib.classList.toggle("is-long", corredor.numero_camisa.length >= 4);
+				confirmName.textContent = corredor.nome;
+				confirmTime.textContent = corredor.tempo;
 				result.classList.add("is-visible");
 				result.scrollIntoView({ behavior: "smooth", block: "center" });
 			} catch (erro) {

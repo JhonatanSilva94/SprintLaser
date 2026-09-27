@@ -46,10 +46,11 @@
 	<main class="shell">
 		<p class="eyebrow mono">Gravação // fila de produção</p>
 		<h1>Encontre<br>o corredor.</h1>
-		<p class="intro">Digite o código apresentado pelo corredor para conferir os dados da gravação.</p>
+		<p class="intro">Digite o número da camisa do corredor para conferir os dados da gravação.</p>
 		<form id="search-form" novalidate>
 			<div class="search-row">
-				<label class="field"><span>CORREDOR NÚMERO:</span><input id="runner-code" inputmode="numeric" maxlength="2" placeholder="01" required></label>
+				<!-- MUDANÇA: a busca era pelo código sequencial (2 dígitos); agora é pelo número da camisa (até 6). -->
+				<label class="field"><span>NÚMERO DA CAMISA:</span><input id="runner-bib" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="150" required></label>
 				<button class="button" type="submit">Buscar <span>↗</span></button>
 			</div>
 			<p class="status" id="search-status" role="alert"></p>
@@ -63,17 +64,19 @@
 	<footer class="shell mono">Sprint Laser / produção em movimento</footer>
 	<script src="config.js"></script>
 	<script>
-		// Busca o corredor na API. Devolve { codigo, nome, tempo }, ou null se a API
+		// Busca o corredor na API. Devolve { nome, tempo }, ou null se a API
 		// responder 404. Outros erros viram Error; falha de rede vira TypeError (do fetch).
-		async function buscarCorredor(codigo) {
-			const resposta = await fetch(`${API_URL}/corredor/${encodeURIComponent(codigo)}`);
+		// MUDANÇA: busca pelo número da camisa. Zeros à esquerda podem ser enviados;
+		// a API normaliza ("0150" encontra a camisa 150).
+		async function buscarCorredor(numeroCamisa) {
+			const resposta = await fetch(`${API_URL}/corredor/${encodeURIComponent(numeroCamisa)}`);
 			if (resposta.status === 404) return null;
 			if (!resposta.ok) throw new Error("Não foi possível buscar o corredor. Tente novamente.");
 			return resposta.json();
 		}
 
 		const form = document.querySelector("#search-form");
-		const input = document.querySelector("#runner-code");
+		const input = document.querySelector("#runner-bib");
 		const status = document.querySelector("#search-status");
 		const card = document.querySelector("#runner-card");
 		const name = document.querySelector("#runner-name");
@@ -81,17 +84,17 @@
 
 		form.addEventListener("submit", async (event) => {
 			event.preventDefault();
-			const codigo = input.value.trim();
+			const numeroCamisa = input.value.trim();
 			card.classList.remove("is-visible");
-			if (!/^\d{1,2}$/.test(codigo)) {
-				status.textContent = "Não encontramos um corredor com esse código.";
+			if (!/^\d{1,6}$/.test(numeroCamisa)) {
+				status.textContent = "Não encontramos um corredor com esse número de camisa.";
 				return;
 			}
 			status.textContent = "";
 			try {
-				const corredor = await buscarCorredor(codigo);
+				const corredor = await buscarCorredor(numeroCamisa);
 				if (!corredor) {
-					status.textContent = "Não encontramos um corredor com esse código.";
+					status.textContent = "Não encontramos um corredor com esse número de camisa.";
 					return;
 				}
 				name.textContent = corredor.nome;

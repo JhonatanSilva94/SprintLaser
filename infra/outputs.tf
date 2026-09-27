@@ -5,7 +5,7 @@
 
 # URL base da API, sem barra no final. Ex.:
 #   https://abc123.execute-api.sa-east-1.amazonaws.com
-# As rotas ficam em <api_url>/cadastro e <api_url>/corredor/{codigo}.
+# As rotas ficam em <api_url>/cadastro e <api_url>/corredor/{numero_camisa}.
 output "api_url" {
   description = "URL base da API do SprintLaser"
   value       = aws_apigatewayv2_api.api.api_endpoint

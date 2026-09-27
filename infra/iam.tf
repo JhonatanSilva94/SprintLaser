@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # Toda Lambda roda "vestindo" uma role do IAM. A role define o que o código
 # pode fazer na AWS. Aqui cada Lambda tem a sua, com o mínimo necessário:
-#   - cadastro: escrever logs + UpdateItem (contador) + PutItem (corredor)
+#   - cadastro: escrever logs + PutItem (corredor)
 #   - busca:    escrever logs + GetItem
 # Assim, mesmo que o código da busca tivesse um bug, ele não conseguiria
 # gravar nada na tabela.
@@ -40,10 +40,12 @@ data "aws_iam_policy_document" "cadastro" {
     resources = ["${aws_cloudwatch_log_group.cadastro.arn}:*"]
   }
 
-  # UpdateItem: incrementar o CONTADOR com ADD.
-  # PutItem:    salvar o corredor novo.
+  # PutItem: salvar o corredor novo. A condição attribute_not_exists faz
+  # parte do próprio PutItem e não precisa de permissão extra.
+  # MUDANÇA: UpdateItem foi removido; só servia para incrementar o CONTADOR,
+  # que não existe mais. Menos permissão = menos estrago possível num bug.
   statement {
-    actions   = ["dynamodb:UpdateItem", "dynamodb:PutItem"]
+    actions   = ["dynamodb:PutItem"]
     resources = [aws_dynamodb_table.corredores.arn]
   }
 }
