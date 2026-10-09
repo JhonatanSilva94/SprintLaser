@@ -50,6 +50,12 @@
 		.result p { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 390px; }
 		.result .result-message { border-top: 1px solid var(--line); color: var(--paper); font-size: 16px; font-weight: 700; padding-top: 22px; }
 		.result strong { color: var(--paper); }
+		/* Convite para seguir no Instagram, abaixo da confirmação: discreto, mas com área de toque confortável no celular. */
+		.follow { margin-top: 28px; }
+		.result .follow-label { color: var(--muted); font-size: 11px; margin: 0 0 12px; }
+		.follow-link { align-items: center; border: 1px solid var(--line); color: var(--paper); display: inline-flex; font-size: 15px; font-weight: 800; gap: 10px; padding: 10px 16px; }
+		.follow-link:hover, .follow-link:focus-visible { border-color: var(--lime); }
+		.follow-link img { display: block; height: 28px; width: 28px; }
 		footer { color: var(--muted); font-size: 10px; padding: 0 0 34px; }
 		@media (max-width: 480px) { .topbar { min-height: 70px; } main { padding-top: 48px; } .brand { font-size: 22px; } .back-link { font-size: 10px; } }
 	</style>
@@ -86,6 +92,14 @@
 					<div><dt class="mono">Tempo</dt><dd class="result-time" id="confirm-time"></dd></div>
 				</dl>
 				<p class="result-message">Confira seus dados. Na fila de gravação, informe o seu número de peito. Se algo estiver errado, procure a equipe de gravação.</p>
+				<!-- NOVO: link para o Instagram. O endereço https comum já abre o app no celular
+				     (Android e iPhone reconhecem o domínio) e cai no navegador se o app não estiver
+				     instalado. Por isso não usamos instagram://, que não funciona sem o app.
+				     target="_blank" mantém a confirmação aberta na aba do cadastro. -->
+				<div class="follow">
+					<p class="follow-label mono">Nos siga no Instagram:</p>
+					<a class="follow-link" href="https://www.instagram.com/sprint_laser/" target="_blank" rel="noopener"><img src="assets/instagram.svg" alt="" width="28" height="28">@sprint_laser</a>
+				</div>
 			</section>
 		</section>
 	</main>
