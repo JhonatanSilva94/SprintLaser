@@ -64,16 +64,18 @@
 				<div class="shell">
 					<p class="partners-label">Clientes</p>
 					<div class="partner-list" data-partners-track>
-						<img src="assets/Unimed.png" alt="Unimed">
-						<img src="assets/Floractive.png" alt="Floractive">
-						<img src="assets/Banco do Brasil.svg" alt="Banco do Brasil">
-						<img src="assets/Corinthians.svg" alt="Corinthians">
-						<img src="assets/Sicoob.svg" alt="Sicoob">
-						<img src="assets/Moai Sports.png" alt="Moai Sports">
-						<img src="assets/JF SPORTS.svg" alt="JF Sports">
-						<img src="assets/CIRCUITO POPULAR.svg" alt="Circuito Popular de Rua">
-						<img src="assets/TUBIG SPORTS.svg" alt="TUBIG Sports">
-						<img src="assets/SONDA.svg" alt="Sonda">
+						<div class="partner-strip">
+							<img src="assets/Unimed.png" alt="Unimed">
+							<img src="assets/Floractive.png" alt="Floractive">
+							<img src="assets/Banco do Brasil.svg" alt="Banco do Brasil">
+							<img src="assets/Corinthians.svg" alt="Corinthians">
+							<img src="assets/Sicoob.svg" alt="Sicoob">
+							<img src="assets/Moai Sports.png" alt="Moai Sports">
+							<img src="assets/JF SPORTS.svg" alt="JF Sports">
+							<img src="assets/CIRCUITO POPULAR.svg" alt="Circuito Popular de Rua">
+							<img src="assets/TUBIG SPORTS.svg" alt="TUBIG Sports">
+							<img src="assets/SONDA.svg" alt="Sonda">
+						</div>
 					</div>
 				</div>
 			</section>
@@ -151,19 +153,24 @@
 	</div>
 	<a class="wa-float" href="https://wa.me/5511939107205?text=Ol%C3%A1%2C%20gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20da%20Sprint%20Laser." target="_blank" rel="noopener noreferrer" aria-label="Falar com a Sprint Laser no WhatsApp"><svg aria-hidden="true" focusable="false"><use href="#icone-whatsapp"/></svg></a>
 	<script>
+		// Faixa de clientes: letreiro contínuo por CSS (transform), em vez de mudar o scrollLeft a cada quadro.
 		const partnersTrack = document.querySelector("[data-partners-track]");
-		let partnerScroll = 0;
+		const partnersStrip = partnersTrack.querySelector(".partner-strip");
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-		const movePartners = () => {
-			if (partnersTrack.scrollWidth > partnersTrack.clientWidth) {
-				partnerScroll += 0.08;
-				if (partnerScroll >= partnersTrack.scrollWidth - partnersTrack.clientWidth) partnerScroll = 0;
-				partnersTrack.scrollLeft = partnerScroll;
-			}
-			requestAnimationFrame(movePartners);
+		const setupPartners = () => {
+			if (reduceMotion.matches || partnersStrip.offsetWidth <= partnersTrack.clientWidth) return;
+			const copy = partnersStrip.cloneNode(true);
+			copy.setAttribute("aria-hidden", "true");
+			copy.querySelectorAll("img").forEach((img) => { img.alt = ""; });
+			partnersTrack.append(copy);
+			// ~24px por segundo, na mesma velocidade em monitores de 60 Hz ou 240 Hz
+			partnersTrack.style.setProperty("--partners-duration", `${partnersStrip.offsetWidth / 24}s`);
+			partnersTrack.classList.add("is-moving");
 		};
 
-		movePartners();
+		if (document.readyState === "complete") setupPartners();
+		else window.addEventListener("load", setupPartners);
 	</script>
 </body>
 </html>

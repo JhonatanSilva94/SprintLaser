@@ -262,9 +262,15 @@ a { color: inherit; text-decoration: none; }
 .ticker b { color: var(--laser); font-weight: 400; }
 
 /* Clientes */
-.partners { background: rgba(0, 0, 0, .7); border-bottom: 1px solid var(--line); padding: 40px 0 36px; }
+.partners { background: rgba(0, 0, 0, .7); border-bottom: 1px solid var(--line); isolation: isolate; padding: 40px 0 36px; }
 .partners-label { color: var(--muted); font-size: 15px; margin: 0 0 22px; text-align: center; }
-.partner-list { align-items: center; display: flex; flex-wrap: nowrap; gap: 24px 48px; justify-content: flex-start; overflow-x: auto; padding: 0 24px 8px; scrollbar-width: none; }
+.partner-list { display: flex; overflow-x: auto; padding: 0 0 8px; scrollbar-width: none; }
+.partner-list.is-moving { overflow: hidden; }
+/* Duas faixas iguais lado a lado andando -100%: a volta é emendada, sem salto */
+.partner-strip { align-items: center; display: flex; flex: 0 0 auto; gap: 48px; padding: 0 24px; }
+.partner-list.is-moving .partner-strip { animation: partners-marquee var(--partners-duration, 60s) linear infinite; will-change: transform; }
+.partner-list.is-moving:hover .partner-strip { animation-play-state: paused; }
+@keyframes partners-marquee { to { transform: translateX(-100%); } }
 .partner-list::-webkit-scrollbar { display: none; }
 .partner-list img { flex: 0 0 auto; height: 70px; max-width: 210px; mix-blend-mode: screen; object-fit: contain; opacity: .9; width: auto; }
 .partner-list img:first-child,
@@ -462,7 +468,8 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.hero { align-content: center; gap: 36px; }
 	.plate { min-width: 0; width: 100%; }
 	.ticker { flex-wrap: nowrap; gap: 18px; justify-content: flex-start; -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); overflow: hidden; white-space: nowrap; }
-	.partner-list { gap: 22px 28px; padding: 0 0 6px; }
+	.partner-list { padding: 0 0 6px; }
+	.partner-strip { gap: 28px; padding: 0 14px; }
 	.partner-list img { height: 64px; max-width: 170px; }
 	.partner-list img:first-child,
 	.partner-list img:nth-child(3) { height: 86px; }
