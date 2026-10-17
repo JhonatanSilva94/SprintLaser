@@ -80,9 +80,8 @@ a { color: inherit; text-decoration: none; }
 
 /* Topo */
 .topbar-wrap {
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	background: rgba(0, 0, 0, .62);
+	/* Sem backdrop-filter: o desfoque sobre o fundo animado era recalculado a cada quadro */
+	background: rgba(0, 0, 0, .8);
 	border-bottom: 1px solid var(--line);
 	position: sticky;
 	top: 0;
