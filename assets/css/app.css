@@ -209,11 +209,53 @@ input[aria-invalid="true"] { border-color: var(--cor-destaque); }
 .follow-link:hover, .follow-link:focus-visible { box-shadow: inset 0 0 0 2px var(--cor-destaque); }
 .follow-link img { display: block; height: 28px; width: 28px; }
 
+/* Gravador: busca. Título menor que no cadastro para nome e tempo caberem na tela sem rolar. */
+main:has(#search-form) h1 { font-size: clamp(44px, 10vw, 72px); }
+main:has(#search-form) .intro { margin-bottom: 24px; }
+.search-row { align-items: end; display: grid; gap: 14px; grid-template-columns: 1fr auto; }
+.search-row .field { margin: 0; }
+#search-form input {
+	font-family: var(--display);
+	font-size: 40px;
+	font-variant-numeric: tabular-nums;
+	font-weight: 800;
+	letter-spacing: .04em;
+	min-height: 76px;
+}
+#search-form .button { min-height: 76px; padding: 0 36px; }
+#search-form .status { margin-top: 14px; }
+
+/* Gravador: dados para gravar. Nome e tempo do tamanho de título, para ler de longe. */
+.runner-card { border-top: 4px solid var(--laser); display: none; margin-top: 22px; padding: 24px 0 8px; }
+.runner-card.is-visible { display: block; }
+.card-label { color: var(--cor-destaque); font-size: 17px; font-weight: 600; margin: 0 0 6px; }
+.runner-name {
+	color: #ffffff;
+	font-family: var(--display);
+	font-size: clamp(56px, 16vw, 128px);
+	font-weight: 900;
+	line-height: .9;
+	margin: 0 0 18px;
+	overflow-wrap: anywhere;
+	text-transform: uppercase;
+}
+.runner-time {
+	color: var(--cor-destaque);
+	font-family: var(--display);
+	font-size: clamp(56px, 16vw, 128px);
+	font-variant-numeric: tabular-nums;
+	font-weight: 800;
+	line-height: .9;
+	margin: 0;
+}
+
 footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; padding: 22px 0 32px; }
 
 @media (max-width: 620px) {
 	:root { --header-h: 68px; }
 	.brand { font-size: 21px; }
+	.search-row { grid-template-columns: 1fr; }
+	#search-form .button { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
