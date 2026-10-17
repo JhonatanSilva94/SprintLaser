@@ -4,69 +4,20 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Cadastro de corredor | Sprint Laser</title>
+	<meta name="theme-color" content="#000000">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-	<style>
-		:root { --ink: #000; --paper: #f6f3ed; --muted: #9b9a94; --line: rgba(241,238,232,.18); --ember: #ed1b2f; --lime: #f5d400; }
-		* { box-sizing: border-box; }
-		body { background: var(--ink); color: var(--paper); font-family: "Manrope", sans-serif; margin: 0; min-height: 100vh; }
-		a { color: inherit; text-decoration: none; }
-		.shell { margin: 0 auto; width: min(100% - 40px, 620px); }
-		.mono { font-family: "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
-		.topbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; min-height: 76px; }
-		.brand { color: var(--ember); font-size: 25px; font-style: italic; font-weight: 800; letter-spacing: -.06em; line-height: .78; transform: scaleX(1.22); transform-origin: left center; }
-		.back-link { color: var(--muted); font-size: 11px; }
-		main { padding: 62px 0 80px; }
-		.eyebrow { color: var(--ember); font-size: 11px; margin: 0 0 22px; }
-		h1 { font-size: clamp(42px, 12vw, 76px); letter-spacing: -.08em; line-height: .9; margin: 0; max-width: 560px; }
-		.intro { color: var(--muted); font-size: 15px; line-height: 1.65; margin: 26px 0 42px; max-width: 470px; }
-		.form-panel { border-top: 1px solid var(--line); padding-top: 28px; }
-		.field { display: block; margin-bottom: 24px; }
-		.field span { color: var(--paper); display: block; font-size: 11px; font-weight: 700; margin-bottom: 10px; }
-		input { background: #090909; border: 1px solid var(--line); border-radius: 0; color: var(--paper); font: 500 18px "Manrope", sans-serif; outline: none; padding: 16px; width: 100%; }
-		input:focus { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime); }
-		input::placeholder { color: #5f5e59; }
-		#runner-name { text-transform: uppercase; }
-		.time-preview { color: var(--lime); display: block; font: 11px "DM Mono", monospace; margin-top: 10px; min-height: 16px; }
-		.engraving-preview { border-left: 2px solid var(--lime); margin: 28px 0 26px; padding: 16px 18px; }
-		.engraving-label { color: var(--lime); display: block; font: 11px "DM Mono", monospace; margin-bottom: 9px; }
-		.engraving-value { color: var(--paper); display: block; font-size: 20px; font-weight: 800; letter-spacing: -.04em; min-height: 25px; overflow-wrap: anywhere; }
-		.error { color: var(--ember); font-size: 12px; line-height: 1.4; min-height: 18px; }
-		.button { background: var(--lime); border: 0; color: var(--ink); cursor: pointer; display: inline-flex; font: 800 12px "Manrope", sans-serif; letter-spacing: .02em; padding: 17px 22px; text-transform: uppercase; }
-		.button:hover { background: #ffe95b; }
-		.result { background: #080808; border: 2px solid var(--lime); display: none; margin-top: 42px; padding: 42px 24px 46px; position: relative; text-align: center; }
-		.result.is-visible { display: block; }
-		.result::before { background: var(--ember); content: ""; height: 5px; left: 0; position: absolute; right: 0; top: 0; }
-		.result-label { color: var(--lime); font-size: 12px; font-weight: 700; margin: 0 0 20px; }
-		.result .code { color: var(--paper); font-size: clamp(128px, 38vw, 220px); font-weight: 800; letter-spacing: -.12em; line-height: .78; margin: 0 0 34px; }
-		/* Número da camisa pode ter até 6 dígitos; com 4 ou mais, o tamanho acima estoura a largura do celular. */
-		.result .code.is-long { font-size: clamp(64px, 19vw, 140px); }
-		/* Nome e tempo abaixo do número, para o corredor conferir antes de ir para a fila. */
-		.result-details { display: grid; gap: 16px; margin: 0 auto 30px; max-width: 390px; }
-		.result-details dt { color: var(--lime); font-size: 11px; margin-bottom: 6px; }
-		.result-details dd { color: var(--paper); font-size: 24px; font-weight: 800; letter-spacing: -.04em; margin: 0; overflow-wrap: anywhere; }
-		.result-details .result-time { font-family: "DM Mono", monospace; font-weight: 500; letter-spacing: 0; }
-		.result p { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 390px; }
-		.result .result-message { border-top: 1px solid var(--line); color: var(--paper); font-size: 16px; font-weight: 700; padding-top: 22px; }
-		.result strong { color: var(--paper); }
-		/* Convite para seguir no Instagram, abaixo da confirmação: discreto, mas com área de toque confortável no celular. */
-		.follow { margin-top: 28px; }
-		.result .follow-label { color: var(--muted); font-size: 11px; margin: 0 0 12px; }
-		.follow-link { align-items: center; border: 1px solid var(--line); color: var(--paper); display: inline-flex; font-size: 15px; font-weight: 800; gap: 10px; padding: 10px 16px; }
-		.follow-link:hover, .follow-link:focus-visible { border-color: var(--lime); }
-		.follow-link img { display: block; height: 28px; width: 28px; }
-		footer { color: var(--muted); font-size: 10px; padding: 0 0 34px; }
-		@media (max-width: 480px) { .topbar { min-height: 70px; } main { padding-top: 48px; } .brand { font-size: 22px; } .back-link { font-size: 10px; } }
-	</style>
+	<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,700&family=Big+Shoulders+Display:wght@800;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-	<header class="shell topbar">
-		<a class="brand" href="index.html" aria-label="Sprint Laser">SPRINT<br>LASER</a>
-		<a class="back-link mono" href="index.html">Início ↗</a>
-	</header>
+	<div class="topbar-wrap">
+		<header class="shell topbar">
+			<a class="brand" href="index.html" aria-label="Sprint Laser">SPRINT<br>LASER</a>
+			<a class="back-link" href="index.html">Início</a>
+		</header>
+	</div>
 	<main class="shell">
-		<p class="eyebrow mono">Cadastro // corredor</p>
 		<h1>Seu detalhe.<br>Sua chegada.</h1>
 		<p class="intro">Preencha seus dados. Na fila de gravação, basta informar o seu número de peito.</p>
 		<section class="form-panel" aria-label="Cadastro do corredor">
@@ -74,23 +25,23 @@
 				<!-- NOVO: o número da camisa substitui o código gerado pelo sistema. inputmode="numeric" abre o teclado numérico no celular.
 				     Para o corredor aparece como "número de peito", termo que ele reconhece no próprio número da prova;
 				     no código e na API o campo continua se chamando numero_camisa. -->
-				<label class="field"><span>NÚMERO DE PEITO <small class="mono">(somente números)</small></span><input id="runner-bib" name="numero_camisa" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Ex: 150" pattern="[0-9]*" required></label>
+				<label class="field"><span class="field-label">Número de peito <small class="field-hint">(somente números)</small></span><input id="runner-bib" name="numero_camisa" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Ex: 150" pattern="[0-9]*" required></label>
 				<!-- MUDANÇA: limite do nome caiu de 15 para 10 caracteres (texto do rótulo, maxlength e os slice() no script). -->
-				<label class="field"><span>NOME <small class="mono">(máx. 10 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="10" placeholder="Como devemos gravar?" required></label>
-				<label class="field"><span>TEMPO DE PROVA <small class="mono">(somente números)</small></span><input id="runner-time" name="time" inputmode="numeric" maxlength="6" placeholder="Ex: 3545 pra 00:35:45" pattern="[0-9]+" required><small class="time-preview" id="time-preview" aria-live="polite">Tempo convertido: --:--:--</small></label>
-				<div class="engraving-preview" aria-live="polite"><span class="engraving-label">COMO VAI SER GRAVADO:</span><strong class="engraving-value" id="engraving-value">Preencha nome e tempo</strong></div>
+				<label class="field"><span class="field-label">Nome <small class="field-hint">(máx. 10 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="10" placeholder="Como devemos gravar?" required></label>
+				<label class="field"><span class="field-label">Tempo de prova <small class="field-hint">(somente números)</small></span><input id="runner-time" name="time" inputmode="numeric" maxlength="6" placeholder="Ex: 3545 pra 00:35:45" pattern="[0-9]+" required><small class="time-preview" id="time-preview" aria-live="polite">Tempo convertido: --:--:--</small></label>
+				<div class="engraving-preview" aria-live="polite"><span class="engraving-label">Como vai ser gravado:</span><strong class="engraving-value" id="engraving-value">Preencha nome e tempo</strong></div>
 				<p class="error" id="form-error" role="alert"></p>
-				<button class="button" type="submit">Aplicar <span>↗</span></button>
+				<button class="button button-block" type="submit">Aplicar</button>
 			</form>
 			<!-- MUDANÇA: antes esta tela mostrava o código sequencial gerado pela API.
 			     Agora é uma confirmação: número da camisa em destaque + nome e tempo,
 			     exatamente como foram salvos, para o corredor conferir. -->
 			<section class="result" id="registration-result" aria-live="polite">
-				<p class="result-label mono">Cadastro confirmado // número de peito</p>
+				<p class="result-label">Cadastro confirmado. Seu número de peito:</p>
 				<p class="code" id="confirm-bib"></p>
 				<dl class="result-details">
-					<div><dt class="mono">Nome</dt><dd id="confirm-name"></dd></div>
-					<div><dt class="mono">Tempo</dt><dd class="result-time" id="confirm-time"></dd></div>
+					<div><dt>Nome</dt><dd id="confirm-name"></dd></div>
+					<div><dt>Tempo</dt><dd class="result-time" id="confirm-time"></dd></div>
 				</dl>
 				<p class="result-message">Confira seus dados. Na fila de gravação, informe o seu número de peito. Se algo estiver errado, procure a equipe de gravação.</p>
 				<!-- NOVO: link para o Instagram. O endereço https comum já abre o app no celular
@@ -98,13 +49,13 @@
 				     instalado. Por isso não usamos instagram://, que não funciona sem o app.
 				     target="_blank" mantém a confirmação aberta na aba do cadastro. -->
 				<div class="follow">
-					<p class="follow-label mono">Nos siga no Instagram:</p>
+					<p class="follow-label">Nos siga no Instagram:</p>
 					<a class="follow-link" href="https://www.instagram.com/sprint_laser/" target="_blank" rel="noopener"><img src="assets/instagram.svg" alt="" width="28" height="28">@sprint_laser</a>
 				</div>
 			</section>
 		</section>
 	</main>
-	<footer class="shell mono">Sprint Laser / experiência que fica</footer>
+	<footer class="shell">Sprint Laser, experiência que fica</footer>
 	<script src="config.js"></script>
 	<script>
 		function converterTempo(valor) {
