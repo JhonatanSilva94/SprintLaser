@@ -1,4 +1,4 @@
-/* Estilos exclusivos do index.html (cadastro.html e gravador.html têm CSS próprio). */
+/* Estilos das páginas do redesign (index.html e galeria.html). cadastro.html e gravador.html têm CSS próprio. */
 :root {
 	--black: #000000;
 	--steel: #1d2024;
@@ -101,7 +101,7 @@ a { color: inherit; text-decoration: none; }
 .brand-name::after { background: var(--signal); bottom: -8px; content: ""; height: 2px; left: 0; position: absolute; width: 30px; }
 .nav { align-items: center; display: flex; gap: clamp(16px, 3vw, 36px); }
 .nav a { color: var(--muted); font-size: 15px; font-weight: 500; transition: color .2s ease; }
-.nav a:hover, .nav a[aria-current="true"] { color: var(--paper); }
+.nav a:hover, .nav a[aria-current="page"] { color: var(--paper); }
 .nav .nav-cta {
 	background: var(--whatsapp);
 	color: #04170a;
@@ -273,6 +273,57 @@ h2 {
 .gallery-item figure { display: grid; grid-template-rows: 1fr auto; height: 100%; margin: 0; }
 .gallery-item img { height: 100%; object-fit: cover; width: 100%; }
 .gallery-item figcaption { border-top: 2px solid var(--brass); color: #c9c6bf; font-size: 15px; margin-top: 10px; padding-top: 8px; }
+.gallery-more { display: flex; justify-content: flex-start; margin-top: 40px; }
+
+/* Página galeria.html */
+.gallery-page { border-top: 0; min-height: calc(100svh - var(--header-h)); }
+.gallery-page h1 {
+	font-family: var(--display);
+	font-size: clamp(64px, 11vw, 160px);
+	font-weight: 900;
+	line-height: .86;
+	margin: 0;
+	text-transform: uppercase;
+}
+.photo-grid { display: grid; gap: 40px 20px; grid-template-columns: repeat(2, 1fr); list-style: none; margin: 0; padding: 0; }
+.photo-grid figure { margin: 0; }
+.photo-link { background: var(--steel); cursor: zoom-in; display: block; overflow: hidden; }
+.photo-link img { aspect-ratio: 3 / 2; height: auto; object-fit: cover; transition: transform .5s ease; width: 100%; }
+.photo-link:hover img { transform: scale(1.03); }
+.photo-grid figcaption { border-top: 2px solid var(--brass); color: #c9c6bf; font-size: 15px; margin-top: 10px; padding-top: 8px; }
+
+/* Lightbox (criado por assets/js/galeria.js) */
+html:has(.lightbox[open]) { overflow: hidden; }
+.lightbox {
+	background: transparent;
+	border: 0;
+	color: var(--paper);
+	height: 100%;
+	max-height: none;
+	max-width: none;
+	padding: 72px clamp(16px, 7vw, 96px) 24px;
+	width: 100%;
+}
+.lightbox[open] { align-items: center; display: flex; justify-content: center; }
+.lightbox::backdrop { background: rgba(0, 0, 0, .96); }
+.lightbox-figure { margin: 0; max-width: 100%; }
+.lightbox-img { height: auto; max-height: calc(100svh - 160px); max-width: 100%; object-fit: contain; width: auto; }
+.lightbox-caption { color: #c9c6bf; display: flex; font-size: 15px; gap: 24px; justify-content: space-between; margin-top: 12px; }
+.lightbox-count { color: var(--muted); flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+.lightbox-btn {
+	background: rgba(0, 0, 0, .55);
+	border: 1px solid var(--line);
+	color: var(--paper);
+	cursor: pointer;
+	font: 500 15px/1 var(--body);
+	position: fixed;
+	transition: border-color .2s ease;
+}
+.lightbox-btn:hover { border-color: var(--paper); }
+.lightbox-close { padding: 12px 16px; right: var(--gutter); top: 16px; }
+.lightbox-prev, .lightbox-next { font-size: 34px; height: 56px; line-height: 0; top: 50%; translate: 0 -50%; width: 44px; }
+.lightbox-prev { left: 12px; }
+.lightbox-next { right: 12px; }
 
 /* Valores */
 .values { border-top: 1px solid var(--line); padding: clamp(64px, 9vw, 120px) 0; }
@@ -325,6 +376,10 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.gallery-grid { gap: 28px; }
 	.gallery-item:nth-child(n) { grid-column: 1 / -1; }
 	.gallery-item:nth-child(n) .frame { aspect-ratio: 3 / 2; }
+	.photo-grid { grid-template-columns: 1fr; gap: 28px; }
+	.lightbox { padding: 64px 0 16px; }
+	.lightbox-prev, .lightbox-next { bottom: 16px; top: auto; translate: none; }
+	.lightbox-caption { padding: 0 64px 0 16px; }
 	.values-grid { grid-template-columns: 1fr; gap: 32px; }
 	footer .shell, .footer-main { align-items: flex-start; flex-direction: column; }
 }
@@ -340,4 +395,6 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.backdrop img:first-child { opacity: 1; }
 	.etch-fill { animation: none; }
 	.etch-beam { animation: none; display: none; }
+	.photo-link img { transition: none; }
+	.photo-link:hover img { transform: none; }
 }
