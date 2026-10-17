@@ -10,3 +10,7 @@ infra/build/
 
 # Cache do Python
 __pycache__/
+
+# Fotos originais em alta (o site usa as versões .webp otimizadas)
+assets/img/galeria/*.jpeg
+assets/img/galeria/*.jpg
