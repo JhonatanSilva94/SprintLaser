@@ -339,8 +339,71 @@ html:has(.lightbox[open]) { overflow: hidden; }
 .value-item h3 { color: var(--cor-destaque); font-family: var(--display); font-size: 32px; font-weight: 800; line-height: 1; margin: 0 0 10px; text-transform: uppercase; }
 .value-item p { color: #c9c6bf; margin: 0; max-width: 44ch; }
 
+/* Fale com a gente */
+.contact { background: rgba(0, 0, 0, .78); border-top: 1px solid var(--line); padding: clamp(72px, 10vw, 136px) 0; position: relative; }
+.contact::before {
+	background: var(--laser);
+	box-shadow: 0 0 18px 2px rgba(237, 27, 47, .6);
+	content: "";
+	height: 2px;
+	left: 0;
+	position: absolute;
+	top: -1px;
+	width: min(420px, 40%);
+}
+.contact-inner { align-items: start; display: grid; gap: 40px clamp(40px, 7vw, 112px); grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.contact h2 { font-size: clamp(56px, 8.5vw, 128px); font-weight: 900; line-height: .86; max-width: 9ch; }
+.contact-lead { color: var(--paper); font-size: clamp(19px, 1.7vw, 22px); line-height: 1.45; margin: 0 0 28px; max-width: 34ch; }
+.contact-steps { counter-reset: passo; display: grid; gap: 14px; list-style: none; margin: 0 0 36px; padding: 0; }
+.contact-steps li { align-items: center; color: #c9c6bf; counter-increment: passo; display: flex; gap: 16px; }
+.contact-steps li::before {
+	color: var(--cor-destaque);
+	content: counter(passo);
+	flex: 0 0 1.2em;
+	font-family: var(--display);
+	font-size: 28px;
+	font-weight: 800;
+	line-height: 1;
+}
+.wa-button {
+	align-items: center;
+	background: var(--whatsapp);
+	color: #04170a;
+	display: inline-flex;
+	font-size: 19px;
+	font-weight: 600;
+	gap: 14px;
+	padding: 18px 28px 18px 22px;
+	transition: background .2s ease, transform .2s ease;
+}
+.wa-button svg { flex: 0 0 auto; height: 28px; width: 28px; }
+.wa-button:hover { background: #5ee88c; transform: translateY(-2px); }
+.contact-phone { color: var(--muted); font-size: 15px; margin: 16px 0 0; }
+.contact-phone a { border-bottom: 1px solid var(--line); color: var(--paper); font-variant-numeric: tabular-nums; }
+.contact-phone a:hover { border-color: var(--paper); }
+
+/* Botão flutuante do WhatsApp */
+.wa-float {
+	align-items: center;
+	background: var(--whatsapp);
+	border-radius: 50%;
+	bottom: calc(20px + env(safe-area-inset-bottom));
+	box-shadow: 0 6px 22px rgba(0, 0, 0, .5);
+	color: #04170a;
+	display: flex;
+	height: 56px;
+	justify-content: center;
+	position: fixed;
+	right: calc(20px + env(safe-area-inset-right));
+	transition: background .2s ease, transform .2s ease;
+	width: 56px;
+	z-index: 20;
+}
+.wa-float svg { height: 30px; width: 30px; }
+.wa-float:hover { background: #5ee88c; transform: scale(1.06); }
+
 /* Rodapé */
-footer { background: rgba(0, 0, 0, .82); border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; padding: 28px 0 40px; }
+footer { background: rgba(0, 0, 0, .82); border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; padding: 28px 0 96px; }
 footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; }
 .footer-main { align-items: center; display: flex; flex-wrap: wrap; gap: 14px 40px; }
 .footer-nav { display: flex; gap: 24px; }
@@ -386,6 +449,11 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.lightbox-prev, .lightbox-next { bottom: 16px; top: auto; translate: none; }
 	.lightbox-caption { padding: 0 64px 0 16px; }
 	.values-grid { grid-template-columns: 1fr; gap: 32px; }
+	.contact-inner { grid-template-columns: 1fr; }
+	.contact::before { width: 45%; }
+	.wa-button { justify-content: center; width: 100%; }
+	.wa-float { bottom: calc(16px + env(safe-area-inset-bottom)); height: 52px; right: calc(16px + env(safe-area-inset-right)); width: 52px; }
+	.wa-float svg { height: 28px; width: 28px; }
 	footer .shell, .footer-main { align-items: flex-start; flex-direction: column; }
 }
 
@@ -402,4 +470,5 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.etch-beam { animation: none; display: none; }
 	.photo-link img { transition: none; }
 	.photo-link:hover img { transform: none; }
+	.wa-button:hover, .wa-float:hover { transform: none; }
 }
