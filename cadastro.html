@@ -28,7 +28,19 @@
 				<label class="field"><span class="field-label">Número de peito <small class="field-hint">(somente números)</small></span><input id="runner-bib" name="numero_camisa" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Ex: 150" pattern="[0-9]*" required></label>
 				<!-- MUDANÇA: limite do nome caiu de 15 para 10 caracteres (texto do rótulo, maxlength e os slice() no script). -->
 				<label class="field"><span class="field-label">Nome <small class="field-hint">(máx. 10 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="10" placeholder="Como devemos gravar?" required></label>
-				<label class="field"><span class="field-label">Tempo de prova <small class="field-hint">(somente números)</small></span><input id="runner-time" name="time" inputmode="numeric" maxlength="6" placeholder="Ex: 3545 pra 00:35:45" pattern="[0-9]+" required><small class="time-preview" id="time-preview" aria-live="polite">Tempo convertido: --:--:--</small></label>
+				<!-- MUDANÇA: o tempo era um campo só ("3545" virava 00:35:45). Agora são três caixas;
+				     o script junta as três no mesmo formato hh:mm:ss que a API já recebia. -->
+				<fieldset class="field time-field" aria-describedby="time-hint">
+					<legend class="field-label">Tempo de prova</legend>
+					<div class="time-inputs">
+						<label class="time-box"><span>Horas</span><input id="runner-hours" name="horas" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" placeholder="00"></label>
+						<span class="time-sep" aria-hidden="true">:</span>
+						<label class="time-box"><span>Minutos</span><input id="runner-minutes" name="minutos" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" placeholder="00" required></label>
+						<span class="time-sep" aria-hidden="true">:</span>
+						<label class="time-box"><span>Segundos</span><input id="runner-seconds" name="segundos" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" placeholder="00" required></label>
+					</div>
+					<small class="time-preview" id="time-hint">Se a prova levou menos de 1 hora, deixe as horas em branco.</small>
+				</fieldset>
 				<div class="engraving-preview" aria-live="polite"><span class="engraving-label">Como vai ser gravado:</span><strong class="engraving-value" id="engraving-value">Preencha nome e tempo</strong></div>
 				<p class="error" id="form-error" role="alert"></p>
 				<button class="button button-block" type="submit">Aplicar</button>
@@ -58,14 +70,17 @@
 	<footer class="shell">Sprint Laser, experiência que fica</footer>
 	<script src="config.js"></script>
 	<script>
-		function converterTempo(valor) {
-			const digitos = valor.replace(/\D/g, "");
-			if (!digitos) return null;
-			const segundos = Number(digitos.slice(-2).padStart(2, "0"));
-			const minutos = Number(digitos.slice(-4, -2).padStart(2, "0"));
-			const horas = Number(digitos.slice(0, -4) || 0);
-			if (segundos > 59 || minutos > 59) return null;
-			return [horas, minutos, segundos].map(valor => String(valor).padStart(2, "0")).join(":");
+		// MUDANÇA: o tempo vem de três caixas. Junta tudo no formato hh:mm:ss que a API espera.
+		// Horas vazias valem 0; minutos e segundos são obrigatórios, de 0 a 59.
+		// Devolve { tempo } ou { erro, campo } com a caixa que precisa ser corrigida.
+		function validarTempo(horas, minutos, segundos) {
+			if (minutos.value === "") return { erro: "Preencha os minutos do tempo (use 0 se for o caso).", campo: minutos };
+			if (segundos.value === "") return { erro: "Preencha os segundos do tempo (use 0 se for o caso).", campo: segundos };
+			const valores = [Number(horas.value || 0), Number(minutos.value), Number(segundos.value)];
+			if (valores[1] > 59) return { erro: "Os minutos vão de 0 a 59.", campo: minutos };
+			if (valores[2] > 59) return { erro: "Os segundos vão de 0 a 59.", campo: segundos };
+			if (valores.every(valor => valor === 0)) return { erro: "O tempo não pode ser 00:00:00.", campo: minutos };
+			return { tempo: valores.map(valor => String(valor).padStart(2, "0")).join(":") };
 		}
 
 		// NOVO: mesma normalização da API: "0150" e "150" são a mesma camisa.
@@ -95,15 +110,17 @@
 		const confirmBib = document.querySelector("#confirm-bib");
 		const confirmName = document.querySelector("#confirm-name");
 		const confirmTime = document.querySelector("#confirm-time");
-		const timeField = document.querySelector("#runner-time");
-		const timePreview = document.querySelector("#time-preview");
+		const hoursField = document.querySelector("#runner-hours");
+		const minutesField = document.querySelector("#runner-minutes");
+		const secondsField = document.querySelector("#runner-seconds");
+		const timeFields = [hoursField, minutesField, secondsField];
 		const nameField = document.querySelector("#runner-name");
 		const engravingValue = document.querySelector("#engraving-value");
 		const submitButton = form.querySelector("button[type=submit]");
 
 		function atualizarPreviaGravacao() {
 			const nome = nameField.value.trim().toUpperCase();
-			const tempo = converterTempo(timeField.value);
+			const { tempo } = validarTempo(hoursField, minutesField, secondsField);
 			engravingValue.textContent = nome && tempo ? `${nome} ${tempo}` : "Preencha nome e tempo";
 		}
 
@@ -117,11 +134,25 @@
 			atualizarPreviaGravacao();
 		});
 
-		timeField.addEventListener("input", () => {
-			timeField.value = timeField.value.replace(/\D/g, "").slice(0, 6);
-			const tempoConvertido = converterTempo(timeField.value);
-			timePreview.textContent = tempoConvertido ? `Tempo convertido: ${tempoConvertido}` : "Tempo convertido: --:--:--";
-			atualizarPreviaGravacao();
+		// NOVO: caixas do tempo aceitam só 2 dígitos e pulam para a próxima ao completar.
+		// Apagar numa caixa vazia volta para a anterior.
+		timeFields.forEach((campo, indice) => {
+			campo.addEventListener("input", () => {
+				campo.value = campo.value.replace(/\D/g, "").slice(0, 2);
+				campo.removeAttribute("aria-invalid");
+				const proxima = timeFields[indice + 1];
+				if (campo.value.length === 2 && proxima) proxima.focus();
+				atualizarPreviaGravacao();
+			});
+			campo.addEventListener("keydown", (evento) => {
+				const anterior = timeFields[indice - 1];
+				if (evento.key === "Backspace" && campo.value === "" && anterior) {
+					evento.preventDefault();
+					anterior.focus();
+				}
+			});
+			// Seleciona o conteúdo ao entrar, para digitar por cima sem apagar antes.
+			campo.addEventListener("focus", () => campo.select());
 		});
 
 		form.addEventListener("submit", async (event) => {
@@ -129,13 +160,16 @@
 			if (submitButton.disabled) return;
 			const numeroCamisa = normalizarCamisa(bibField.value);
 			const nome = nameField.value.trim().slice(0, 10).toUpperCase();
-			const campoTempo = timeField;
-			const tempo = converterTempo(campoTempo.value.trim());
+			const { tempo, erro: erroTempo, campo: campoTempo } = validarTempo(hoursField, minutesField, secondsField);
 			result.classList.remove("is-visible");
 			if (!numeroCamisa) { error.textContent = "Digite o seu número de peito para continuar."; return; }
 			if (!nome) { error.textContent = "Digite seu nome para continuar."; return; }
-			if (!tempo) { error.textContent = "Digite o tempo em números, por exemplo 3045 para 00:30:45."; return; }
-			campoTempo.value = tempo;
+			if (erroTempo) {
+				error.textContent = erroTempo;
+				campoTempo.setAttribute("aria-invalid", "true");
+				campoTempo.focus();
+				return;
+			}
 			error.textContent = "";
 			// Bloqueia o botão até a API responder, para um clique duplo não enviar dois cadastros.
 			// (Com a camisa como chave o segundo já seria recusado com 409, mas o

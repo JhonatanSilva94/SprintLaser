@@ -165,6 +165,24 @@ input[aria-invalid="true"] { border-color: var(--cor-destaque); }
 .time-preview { color: var(--muted); display: block; font-size: 15px; margin-top: 8px; min-height: 22px; }
 #runner-name { text-transform: uppercase; }
 
+/* Cadastro: tempo em três caixas (horas : minutos : segundos) */
+.time-field { border: 0; margin: 0 0 26px; min-width: 0; padding: 0; }
+.time-field legend { padding: 0; }
+.time-inputs { align-items: end; display: grid; gap: 8px; grid-template-columns: 1fr auto 1fr auto 1fr; }
+.time-box { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.time-box span { color: var(--paper); font-size: 16px; font-weight: 600; }
+.time-box input {
+	font-family: var(--display);
+	font-size: 44px;
+	font-variant-numeric: tabular-nums;
+	font-weight: 800;
+	min-height: 76px;
+	padding: 0 8px;
+	text-align: center;
+}
+.time-box input::placeholder { color: #a09d96; }
+.time-sep { color: var(--paper); font-family: var(--display); font-size: 44px; font-weight: 800; line-height: 76px; }
+
 /* Cadastro: confirmação depois de salvo */
 .result {
 	border: 2px solid var(--cor-destaque);
