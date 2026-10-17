@@ -44,11 +44,11 @@ a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 4px; }
 .shell { width: min(1240px, 100% - 2 * var(--gutter)); margin: 0 auto; }
 
-/* Fundo: fotos em P&B passando devagar, com camada escura por cima */
+/* Fundo: fotos em P&B passando devagar, com camada escura por cima.
+   As imagens -pb já vêm em preto e branco: sem filter ao vivo, a animação roda só na GPU. */
 .backdrop { inset: 0; overflow: hidden; pointer-events: none; position: fixed; z-index: 0; }
 .backdrop img {
 	animation: backdrop-cycle 32s linear infinite;
-	filter: grayscale(1) contrast(1.08);
 	height: 100%;
 	inset: 0;
 	object-fit: cover;
