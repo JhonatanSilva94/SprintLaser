@@ -227,39 +227,6 @@ input[aria-invalid="true"] { border-color: var(--cor-destaque); }
 .follow-link:hover, .follow-link:focus-visible { box-shadow: inset 0 0 0 2px var(--cor-destaque); }
 .follow-link img { display: block; height: 28px; width: 28px; }
 
-/* Cadastro: popup "Gravação:" antes de enviar */
-html:has(.review[open]) { overflow: hidden; }
-.review {
-	background: var(--steel);
-	border: 0;
-	border-top: 4px solid var(--laser);
-	color: var(--paper);
-	max-height: calc(100svh - 32px);
-	max-width: 520px;
-	overflow-y: auto;
-	padding: 24px 22px 22px;
-	width: calc(100% - 32px);
-}
-.review::backdrop { background: rgba(0, 0, 0, .86); }
-.review-title { font-family: var(--display); font-size: 40px; font-weight: 900; line-height: 1; margin: 0 0 18px; text-transform: uppercase; }
-.review-data { display: grid; gap: 14px; margin: 0 0 18px; }
-.review-data div { border-top: 1px solid var(--line); padding-top: 10px; }
-.review-data dt { color: var(--muted); font-size: 16px; font-weight: 600; margin-bottom: 2px; }
-.review-data dd {
-	font-family: var(--display);
-	font-size: clamp(44px, 13vw, 60px);
-	font-variant-numeric: tabular-nums;
-	font-weight: 900;
-	line-height: 1;
-	margin: 0;
-	overflow-wrap: anywhere;
-	text-transform: uppercase;
-}
-.review-time dd { color: var(--cor-destaque); font-size: clamp(56px, 17vw, 80px); }
-.review-hint { color: #d2cfc8; font-size: 17px; margin: 0 0 8px; }
-.review .error { margin-bottom: 14px; }
-.review-actions { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-
 /* Gravador: busca. Título menor que no cadastro para nome e tempo caberem na tela sem rolar. */
 main:has(#search-form) h1 { font-size: clamp(44px, 10vw, 72px); }
 main:has(#search-form) .intro { margin-bottom: 24px; }

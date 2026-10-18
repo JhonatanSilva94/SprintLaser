@@ -43,7 +43,7 @@
 				</fieldset>
 				<div class="engraving-preview" aria-live="polite"><span class="engraving-label">Como vai ser gravado:</span><strong class="engraving-value" id="engraving-value">Preencha nome e tempo</strong></div>
 				<p class="error" id="form-error" role="alert"></p>
-				<button class="button button-block" type="submit">Conferir gravação</button>
+				<button class="button button-block" type="submit">Confirmar gravação</button>
 			</form>
 			<!-- MUDANÇA: antes esta tela mostrava o código sequencial gerado pela API.
 			     Agora é uma confirmação: número da camisa em destaque + nome e tempo,
@@ -67,22 +67,6 @@
 			</section>
 		</section>
 	</main>
-	<!-- NOVO: confirmação antes de enviar. Só o botão "Confirmar" chama a API;
-	     "Corrigir" (ou Esc) fecha e mantém o formulário preenchido. -->
-	<dialog class="review" id="review-dialog" aria-labelledby="review-title">
-		<p class="review-title" id="review-title">Gravação:</p>
-		<dl class="review-data">
-			<div><dt>Número de peito</dt><dd id="review-bib"></dd></div>
-			<div><dt>Nome</dt><dd id="review-name"></dd></div>
-			<div class="review-time"><dt>Tempo</dt><dd id="review-time"></dd></div>
-		</dl>
-		<p class="review-hint">Confira com atenção: é assim que vai ficar gravado na medalha.</p>
-		<p class="error" id="review-status" role="status" aria-live="polite"></p>
-		<div class="review-actions">
-			<button class="button button-ghost" type="button" id="review-fix">Corrigir</button>
-			<button class="button" type="button" id="review-confirm">Confirmar</button>
-		</div>
-	</dialog>
 	<footer class="shell">Sprint Laser, experiência que fica</footer>
 	<script src="config.js"></script>
 	<script>
@@ -132,6 +116,7 @@
 		const timeFields = [hoursField, minutesField, secondsField];
 		const nameField = document.querySelector("#runner-name");
 		const engravingValue = document.querySelector("#engraving-value");
+		const submitButton = form.querySelector("button[type=submit]");
 
 		function atualizarPreviaGravacao() {
 			const nome = nameField.value.trim().toUpperCase();
@@ -170,8 +155,9 @@
 			campo.addEventListener("focus", () => campo.select());
 		});
 
-		form.addEventListener("submit", (event) => {
+		form.addEventListener("submit", async (event) => {
 			event.preventDefault();
+			if (submitButton.disabled) return;
 			const numeroCamisa = normalizarCamisa(bibField.value);
 			const nome = nameField.value.trim().slice(0, 10).toUpperCase();
 			const { tempo, erro: erroTempo, campo: campoTempo } = validarTempo(hoursField, minutesField, secondsField);
@@ -185,44 +171,12 @@
 				return;
 			}
 			error.textContent = "";
-			// MUDANÇA: o envio não chama mais a API; abre a confirmação com os dados.
-			pendente = { numeroCamisa, nome, tempo };
-			reviewBib.textContent = numeroCamisa;
-			reviewName.textContent = nome;
-			reviewTime.textContent = tempo;
-			reviewStatus.textContent = "";
-			reviewDialog.showModal();
-		});
-
-		// NOVO: confirmação antes de enviar.
-		const reviewDialog = document.querySelector("#review-dialog");
-		const reviewBib = document.querySelector("#review-bib");
-		const reviewName = document.querySelector("#review-name");
-		const reviewTime = document.querySelector("#review-time");
-		const reviewStatus = document.querySelector("#review-status");
-		const reviewFix = document.querySelector("#review-fix");
-		const reviewConfirm = document.querySelector("#review-confirm");
-		let pendente = null;
-		let enviando = false;
-
-		// "Corrigir" só fecha: os campos continuam preenchidos para ajustar.
-		reviewFix.addEventListener("click", () => reviewDialog.close());
-		// Esc também fecha, mas não no meio do envio.
-		reviewDialog.addEventListener("cancel", (evento) => { if (enviando) evento.preventDefault(); });
-
-		reviewConfirm.addEventListener("click", async () => {
-			// Bloqueia o "Confirmar" até a API responder, para um clique duplo não enviar dois cadastros.
+			// Bloqueia o botão até a API responder, para um clique duplo não enviar dois cadastros.
 			// (Com a camisa como chave o segundo já seria recusado com 409, mas o
 			// corredor veria o erro "já cadastrada" mesmo tendo dado certo.)
-			if (enviando || !pendente) return;
-			enviando = true;
-			reviewConfirm.disabled = true;
-			reviewFix.disabled = true;
-			reviewConfirm.textContent = "Enviando…";
-			reviewStatus.textContent = "";
+			submitButton.disabled = true;
 			try {
-				const corredor = await cadastrarCorredor(pendente.numeroCamisa, pendente.nome, pendente.tempo);
-				reviewDialog.close();
+				const corredor = await cadastrarCorredor(numeroCamisa, nome, tempo);
 				// MUDANÇA: mostra o que a API salvou (já normalizado), e não o que foi digitado.
 				confirmBib.textContent = corredor.numero_camisa;
 				confirmBib.classList.toggle("is-long", corredor.numero_camisa.length >= 4);
@@ -231,18 +185,11 @@
 				result.classList.add("is-visible");
 				result.scrollIntoView({ behavior: "smooth", block: "center" });
 			} catch (erro) {
-				// Erro (inclusive o 409 "Camisa já cadastrada...") fica visível no próprio popup;
-				// "Corrigir" volta ao formulário com os dados preenchidos.
-				const mensagem = erro instanceof TypeError
+				error.textContent = erro instanceof TypeError
 					? "Não conseguimos conectar. Verifique sua internet e tente novamente."
 					: erro.message;
-				reviewStatus.textContent = mensagem;
-				error.textContent = mensagem;
 			} finally {
-				enviando = false;
-				reviewConfirm.disabled = false;
-				reviewFix.disabled = false;
-				reviewConfirm.textContent = "Confirmar";
+				submitButton.disabled = false;
 			}
 		});
 	</script>
