@@ -18,8 +18,9 @@
 		</header>
 	</div>
 	<main class="shell">
-		<h1>Seu detalhe.<br>Sua chegada.</h1>
-		<p class="intro">Preencha seus dados. Na fila de gravação, basta informar o seu número de peito.</p>
+		<!-- MUDANÇA: o título grande ("Seu detalhe. Sua chegada.") e o texto de introdução empurravam
+		     o formulário para baixo da tela no celular. Ficou só um título curto, e os campos aparecem logo de cara. -->
+		<h1 class="form-title">Preencha seus dados</h1>
 		<section class="form-panel" aria-label="Cadastro do corredor">
 			<form id="registration-form" novalidate>
 				<!-- NOVO: o número da camisa substitui o código gerado pelo sistema. inputmode="numeric" abre o teclado numérico no celular.
@@ -129,8 +130,21 @@
 			bibField.value = bibField.value.replace(/\D/g, "").slice(0, 6);
 		});
 
+		// NOVO: o nome aceita só letras (com acento e Ç) e um espaço entre as palavras.
+		// Emojis, números e símbolos são descartados na hora em que são digitados ou colados.
+		function limparNome(valor) {
+			return valor
+				.normalize("NFC")
+				.replace(/[^\p{L} ]/gu, "")
+				.replace(/ {2,}/g, " ")
+				.replace(/^ /, "")
+				.slice(0, 10)
+				.toUpperCase();
+		}
+
 		nameField.addEventListener("input", () => {
-			nameField.value = nameField.value.slice(0, 10).toUpperCase();
+			const limpo = limparNome(nameField.value);
+			if (nameField.value !== limpo) nameField.value = limpo;
 			atualizarPreviaGravacao();
 		});
 
@@ -159,7 +173,7 @@
 			event.preventDefault();
 			if (submitButton.disabled) return;
 			const numeroCamisa = normalizarCamisa(bibField.value);
-			const nome = nameField.value.trim().slice(0, 10).toUpperCase();
+			const nome = limparNome(nameField.value).trim();
 			const { tempo, erro: erroTempo, campo: campoTempo } = validarTempo(hoursField, minutesField, secondsField);
 			result.classList.remove("is-visible");
 			if (!numeroCamisa) { error.textContent = "Digite o seu número de peito para continuar."; return; }

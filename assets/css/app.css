@@ -96,6 +96,9 @@ h1 {
 	text-transform: uppercase;
 }
 .intro { color: #d2cfc8; font-size: 19px; line-height: 1.5; margin: 18px 0 36px; max-width: 34ch; }
+/* Cadastro: título curto, para o formulário aparecer sem precisar rolar a página. */
+main:has(.form-title) { padding-top: 24px; }
+h1.form-title { font-size: clamp(32px, 8vw, 44px); line-height: 1; margin-bottom: 20px; }
 
 /* Campos */
 .field { display: block; margin: 0 0 26px; }
