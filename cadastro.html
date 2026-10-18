@@ -28,7 +28,7 @@
 				     no código e na API o campo continua se chamando numero_camisa. -->
 				<label class="field"><span class="field-label">Número de peito <small class="field-hint">(somente números)</small></span><input id="runner-bib" name="numero_camisa" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Ex: 150" pattern="[0-9]*" required></label>
 				<!-- MUDANÇA: limite do nome caiu de 15 para 10 caracteres (texto do rótulo, maxlength e os slice() no script). -->
-				<label class="field"><span class="field-label">Nome <small class="field-hint">(máx. 10 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="10" placeholder="Como devemos gravar?" required></label>
+				<label class="field"><span class="field-label">Nome <small class="field-hint">(máx. 10 caracteres)</small></span><input id="runner-name" name="name" autocomplete="name" maxlength="10" placeholder="NOME PARA GRAVAÇÃO" required></label>
 				<!-- MUDANÇA: o tempo era um campo só ("3545" virava 00:35:45). Agora são três caixas;
 				     o script junta as três no mesmo formato hh:mm:ss que a API já recebia. -->
 				<fieldset class="field time-field" aria-describedby="time-hint">
