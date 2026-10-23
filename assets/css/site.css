@@ -152,7 +152,7 @@ a { color: inherit; text-decoration: none; }
 	align-content: end;
 	display: grid;
 	gap: 48px clamp(32px, 6vw, 96px);
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr);
 	min-height: calc(100svh - var(--header-h));
 	padding: clamp(56px, 10vh, 120px) 0 clamp(56px, 9vh, 104px);
 }
@@ -218,30 +218,6 @@ a { color: inherit; text-decoration: none; }
 }
 .text-link:hover { border-color: var(--cor-destaque); }
 
-/* Placa: exemplo do que vai gravado na medalha */
-.plate {
-	align-self: end;
-	background: linear-gradient(160deg, color-mix(in srgb, var(--cor-destaque) 14%, transparent), color-mix(in srgb, var(--cor-destaque) 3%, transparent));
-	border: 1px solid var(--cor-destaque-suave);
-	grid-column: 2;
-	grid-row: 1 / span 2;
-	margin: 0;
-	min-width: 230px;
-	padding: 22px 26px 24px;
-}
-.plate figcaption { color: var(--cor-destaque); font-size: 14px; font-weight: 500; margin-bottom: 14px; }
-.plate dl { display: grid; gap: 10px; margin: 0; }
-.plate div { align-items: baseline; border-top: 1px solid color-mix(in srgb, var(--cor-destaque) 22%, transparent); display: flex; justify-content: space-between; gap: 24px; padding-top: 10px; }
-.plate dt { color: var(--muted); font-size: 14px; }
-.plate dd {
-	font-family: var(--display);
-	font-size: 30px;
-	font-variant-numeric: tabular-nums;
-	font-weight: 800;
-	line-height: 1;
-	margin: 0;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, .08), 0 -1px 0 rgba(0, 0, 0, .7);
-}
 
 /* Faixa */
 .ticker {
@@ -449,7 +425,6 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 /* Tablet */
 @media (max-width: 960px) {
 	.hero { grid-template-columns: 1fr; }
-	.plate { grid-column: 1; grid-row: auto; justify-self: start; }
 	.gallery-item:nth-child(n) { grid-column: span 6; }
 	.gallery-item:nth-child(n) .frame { aspect-ratio: 4 / 5; height: auto; }
 }
@@ -466,7 +441,6 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.nav .nav-cta svg { height: 20px; width: 20px; }
 	.nav .nav-cta-extra { display: none; }
 	.hero { align-content: center; gap: 36px; }
-	.plate { min-width: 0; width: 100%; }
 	.ticker { flex-wrap: nowrap; gap: 18px; justify-content: flex-start; -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); overflow: hidden; white-space: nowrap; }
 	.partner-list { padding: 0 0 6px; }
 	.partner-strip { gap: 28px; padding: 0 14px; }
