@@ -1,23 +1,18 @@
-# SprintLaser
-
-Site da SprintLaser, empresa de gravação a laser em medalhas de corrida e brindes para eventos.
-
 🔗 **https://sprintlaser.com**
 
+Site da SprintLaser, empresa de gravação a laser em medalhas de corrida e brindes para eventos.
+Solução criada para melhorar o fluxo da gravação e diminuir o tempo das pessoas na fila.
+
+
 ## Como funciona
+1. O corredor escaneia um QR code e preenche o número da camisa, nome e tempo de prova;
+2. O site confirma os dados pro cliente;
+3. O gravador vê o número de camisa do corredor, e antes dele chegar pra gravar ja tem os dados desse cliente, ele epenas confirma;
+4. O gravador então grava e já consegue ir verificando o próximo cliente antes dele chegar.
 
-No dia da corrida, o site organiza a fila de gravação das medalhas:
-
-1. O corredor escaneia um QR code e preenche nome e tempo de prova.
-2. O site mostra um código na tela (`01`, `02`, `03`…).
-3. Na fila, ele apresenta o código ao gravador.
-4. O gravador digita o código e vê o que precisa gravar na medalha.
-
-Ao fim de cada corrida, os dados são apagados.
 
 ## Tecnologias
-
 - **Site:** HTML, CSS e JavaScript
 - **AWS:** S3, CloudFront, API Gateway, Lambda, DynamoDB e Route 53
 - **Back-end:** Python
-- **Infraestrutura como código:** Terraform
+- **IaC:** Terraform
