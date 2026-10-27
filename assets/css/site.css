@@ -23,6 +23,8 @@
 		var(--escovado),
 		linear-gradient(100deg, var(--cor-destaque-escura) 0%, var(--cor-destaque-clara) 20%, var(--cor-destaque) 38%, var(--cor-destaque-clara) 56%, var(--cor-destaque-escura) 76%, var(--cor-destaque) 100%);
 
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* resposta rápida ao toque */
+
 	--header-h: 84px;
 	--gutter: clamp(16px, 4vw, 48px);
 }
@@ -135,16 +137,18 @@ a { color: inherit; text-decoration: none; }
 .nav .nav-cta {
 	align-items: center;
 	background: var(--whatsapp);
+	border-radius: 999px;
 	color: #04170a;
 	display: inline-flex;
 	font-size: 15px;
 	font-weight: 600;
 	gap: 10px;
-	padding: 11px 16px;
-	transition: background .2s ease;
+	padding: 11px 18px 11px 14px;
+	transition: background .2s ease, transform 160ms var(--ease-out);
 	white-space: nowrap;
 }
 .nav .nav-cta:hover { background: #5ee88c; color: #04170a; }
+.nav .nav-cta:active { transform: scale(.97); }
 .nav .nav-cta svg { flex: 0 0 auto; height: 22px; width: 22px; }
 
 /* Hero */
@@ -380,16 +384,18 @@ html:has(.lightbox[open]) { overflow: hidden; }
 .wa-button {
 	align-items: center;
 	background: var(--whatsapp);
+	border-radius: 999px;
 	color: #04170a;
 	display: inline-flex;
 	font-size: 19px;
 	font-weight: 600;
 	gap: 14px;
-	padding: 18px 28px 18px 22px;
-	transition: background .2s ease, transform .2s ease;
+	padding: 18px 30px 18px 22px;
+	transition: background .2s ease, transform 160ms var(--ease-out);
 }
 .wa-button svg { flex: 0 0 auto; height: 28px; width: 28px; }
-.wa-button:hover { background: #5ee88c; transform: translateY(-2px); }
+.wa-button:hover { background: #5ee88c; }
+.wa-button:active { transform: scale(.97); }
 .contact-phone { color: var(--muted); font-size: 15px; margin: 16px 0 0; }
 .contact-phone a { border-bottom: 1px solid var(--line); color: var(--paper); font-variant-numeric: tabular-nums; }
 .contact-phone a:hover { border-color: var(--paper); }
@@ -407,12 +413,15 @@ html:has(.lightbox[open]) { overflow: hidden; }
 	justify-content: center;
 	position: fixed;
 	right: calc(20px + env(safe-area-inset-right));
-	transition: background .2s ease, transform .2s ease;
+	transition: opacity 250ms var(--ease-out), transform 250ms var(--ease-out), background .2s ease;
 	width: 56px;
 	z-index: 20;
 }
 .wa-float svg { height: 30px; width: 30px; }
-.wa-float:hover { background: #5ee88c; transform: scale(1.06); }
+.wa-float:hover { background: #5ee88c; }
+.wa-float:active { transform: scale(.95); }
+/* Na index o topo já tem o botão: a bolinha só aparece depois que o hero sai da tela (script na index.html) */
+.wa-float[data-wa-float]:not(.is-visible) { opacity: 0; pointer-events: none; transform: scale(.9) translateY(8px); }
 
 /* Rodapé */
 footer { background: rgba(0, 0, 0, .82); border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; padding: 28px 0 96px; }
@@ -482,6 +491,6 @@ footer .shell { align-items: center; display: flex; flex-wrap: wrap; gap: 16px 3
 	.etch-beam { animation: none; display: none; }
 	.photo-link img { transition: none; }
 	.photo-link:hover img { transform: none; }
-	.wa-button:hover, .wa-float:hover { transform: none; }
+	.nav .nav-cta:active, .wa-button:active, .wa-float:active, .wa-float[data-wa-float]:not(.is-visible) { transform: none; }
 	.nav a:not(.nav-cta)::after { transition: none; }
 }

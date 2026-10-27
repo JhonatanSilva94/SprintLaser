@@ -143,7 +143,7 @@
 
 		<footer><div class="shell"><div class="footer-main"><span>Sprint Laser, gravação com presença</span><nav class="footer-nav" aria-label="Outras páginas"><a href="cadastro.html">Corredores</a><a href="gravador.html">Gravação</a></nav></div><span>© 2025 Sprint Laser</span></div></footer>
 	</div>
-	<a class="wa-float" href="https://wa.me/5511939107205?text=Ol%C3%A1%2C%20gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20da%20Sprint%20Laser." target="_blank" rel="noopener noreferrer" aria-label="Falar com a Sprint Laser no WhatsApp"><svg aria-hidden="true" focusable="false"><use href="#icone-whatsapp"/></svg></a>
+	<a class="wa-float" data-wa-float href="https://wa.me/5511939107205?text=Ol%C3%A1%2C%20gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20da%20Sprint%20Laser." target="_blank" rel="noopener noreferrer" aria-label="Falar com a Sprint Laser no WhatsApp"><svg aria-hidden="true" focusable="false"><use href="#icone-whatsapp"/></svg></a>
 	<script>
 		// Faixa de clientes: letreiro contínuo por CSS (transform), em vez de mudar o scrollLeft a cada quadro.
 		const partnersTrack = document.querySelector("[data-partners-track]");
@@ -163,6 +163,12 @@
 
 		if (document.readyState === "complete") setupPartners();
 		else window.addEventListener("load", setupPartners);
+
+		// Botão flutuante do WhatsApp: aparece só depois que o hero (que já tem o botão no topo) sai da tela
+		const waFloat = document.querySelector("[data-wa-float]");
+		new IntersectionObserver(([entry]) => {
+			waFloat.classList.toggle("is-visible", !entry.isIntersecting);
+		}).observe(document.querySelector(".hero"));
 	</script>
 </body>
 </html>
