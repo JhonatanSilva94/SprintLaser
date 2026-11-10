@@ -25,11 +25,9 @@
 		<form id="search-form" novalidate>
 			<!-- EVENTO DUPLO: escolhe em qual corrida buscar. A Corrida A é a de sempre;
 			     a B busca a camisa com o prefixo "B-" (quem se cadastrou pelo QR code ?e=b). -->
-			<fieldset class="race-switch">
-				<legend class="field-label">Corrida</legend>
-				<label><input type="radio" name="corrida" value="a" checked><span>Corrida A</span></label>
-				<label><input type="radio" name="corrida" value="b"><span>Corrida B</span></label>
-			</fieldset>
+			<!-- MUDANÇA: eram dois botões lado a lado; virou uma caixa de seleção, que não troca
+			     de corrida com um toque sem querer (precisa abrir a lista e escolher). -->
+			<label class="field race-select"><span class="field-label">Corrida</span><select id="race" name="corrida"><option value="a">Corrida A</option><option value="b">Corrida B</option></select></label>
 			<div class="search-row">
 				<!-- MUDANÇA: a busca era pelo código sequencial (2 dígitos); agora é pelo número da camisa (até 6). -->
 				<label class="field"><span class="field-label">Número da camisa</span><input id="runner-bib" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="150" required></label>
@@ -64,26 +62,30 @@
 		const name = document.querySelector("#runner-name");
 		const time = document.querySelector("#runner-time");
 		const raceBanner = document.querySelector("#race-banner");
+		const raceSelect = document.querySelector("#race");
 
 		// EVENTO DUPLO: corrida escolhida no seletor. Fica salva no localStorage para as
 		// próximas buscas e para quando a página for recarregada. Sem nada salvo, é a A.
 		const CHAVE_CORRIDA = "sprintlaser.corrida";
-		const corridaB = () => form.elements.corrida.value === "b";
+		const corridaB = () => raceSelect.value === "b";
 		const naoEncontrado = () => `Não encontramos um corredor com esse número de camisa${corridaB() ? " na Corrida B" : ""}.`;
 
 		try {
-			if (localStorage.getItem(CHAVE_CORRIDA) === "b") form.elements.corrida.value = "b";
+			if (localStorage.getItem(CHAVE_CORRIDA) === "b") raceSelect.value = "b";
 		} catch { /* localStorage bloqueado: fica na Corrida A */ }
-		raceBanner.hidden = !corridaB();
+		// Faixa no topo e caixa vermelha quando a Corrida B está ativa.
+		function mostrarCorrida() {
+			raceBanner.hidden = !corridaB();
+			raceSelect.classList.toggle("is-b", corridaB());
+		}
+		mostrarCorrida();
 
-		form.querySelectorAll("input[name=corrida]").forEach((opcao) => {
-			opcao.addEventListener("change", () => {
-				try { localStorage.setItem(CHAVE_CORRIDA, form.elements.corrida.value); } catch { /* só não lembra */ }
-				raceBanner.hidden = !corridaB();
-				// O corredor na tela era da outra corrida: limpa para não gravar o errado.
-				card.classList.remove("is-visible");
-				status.textContent = "";
-			});
+		raceSelect.addEventListener("change", () => {
+			try { localStorage.setItem(CHAVE_CORRIDA, raceSelect.value); } catch { /* só não lembra */ }
+			mostrarCorrida();
+			// O corredor na tela era da outra corrida: limpa para não gravar o errado.
+			card.classList.remove("is-visible");
+			status.textContent = "";
 		});
 
 		form.addEventListener("submit", async (event) => {
