@@ -23,8 +23,10 @@ TAMANHO_MAXIMO_NOME = 15  # mesmo limite do campo no cadastro.html
 
 # NOVO: número da camisa. [0-9] em vez de \d porque \d também aceita dígitos
 # de outros alfabetos (ex.: "١٥٠" em árabe), que não queremos como chave.
-SOMENTE_DIGITOS = re.compile(r"^[0-9]+$")
-TAMANHO_MAXIMO_CAMISA = 6  # mesmo limite do campo no cadastro.html
+# EVENTO DUPLO: prefixo opcional "B-" para a corrida B (cadastro.html?e=b).
+# Assim duas corridas simultâneas com a mesma numeração não colidem na chave.
+CAMISA_VALIDA = re.compile(r"(B-)?([0-9]+)")
+TAMANHO_MAXIMO_CAMISA = 6  # mesmo limite do campo no cadastro.html (sem contar o "B-")
 
 MENSAGEM_CAMISA_DUPLICADA = "Camisa já cadastrada. Procure a equipe de gravação."
 
@@ -45,14 +47,18 @@ def normalizar_camisa(valor):
     duas vezes só mudando os zeros. "0" / "000" são rejeitados (não existe
     camisa zero). A Lambda de busca aplica exatamente a mesma regra; se mudar
     aqui, mude lá também.
+
+    EVENTO DUPLO: aceita também "B-" antes do número. Tira todos os espaços e
+    põe em maiúsculo, então "b-0150" e " B - 150 " viram "B-150".
     """
-    valor = str(valor).strip()
-    if not SOMENTE_DIGITOS.match(valor):
+    valor = re.sub(r"\s+", "", str(valor)).upper()
+    partes = CAMISA_VALIDA.fullmatch(valor)
+    if not partes:
         return None
-    valor = valor.lstrip("0")
-    if not valor or len(valor) > TAMANHO_MAXIMO_CAMISA:
+    prefixo, numero = partes.group(1) or "", partes.group(2).lstrip("0")
+    if not numero or len(numero) > TAMANHO_MAXIMO_CAMISA:
         return None
-    return valor
+    return prefixo + numero
 
 
 def handler(event, context):
@@ -66,7 +72,7 @@ def handler(event, context):
     tempo = str(dados.get("tempo", "")).strip()
 
     if not numero_camisa:
-        return resposta(400, {"erro": f"Número da camisa obrigatório, somente números, até {TAMANHO_MAXIMO_CAMISA} dígitos."})
+        return resposta(400, {"erro": f"Número da camisa obrigatório, somente números (com \"B-\" opcional), até {TAMANHO_MAXIMO_CAMISA} dígitos."})
     if not nome or len(nome) > TAMANHO_MAXIMO_NOME:
         return resposta(400, {"erro": f"Nome obrigatório, até {TAMANHO_MAXIMO_NOME} caracteres."})
     if not TEMPO_VALIDO.match(tempo):

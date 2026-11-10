@@ -16,7 +16,8 @@ import boto3  # já vem instalado no runtime Python da Lambda
 tabela = boto3.resource("dynamodb").Table(os.environ["TABLE_NAME"])
 
 # NOVO: mesma regra da Lambda de cadastro (ver normalizar_camisa lá).
-SOMENTE_DIGITOS = re.compile(r"^[0-9]+$")
+# EVENTO DUPLO: prefixo opcional "B-" para a corrida B.
+CAMISA_VALIDA = re.compile(r"(B-)?([0-9]+)")
 TAMANHO_MAXIMO_CAMISA = 6
 
 
@@ -33,15 +34,16 @@ def normalizar_camisa(valor):
     """NOVO: devolve o número sem zeros à esquerda, ou None se inválido.
 
     Precisa ser idêntica à do cadastro: o item foi gravado como "150", então
-    o gravador digitando "0150" tem que buscar "150".
+    o gravador digitando "0150" tem que buscar "150" (e "b-0150", "B-150").
     """
-    valor = str(valor).strip()
-    if not SOMENTE_DIGITOS.match(valor):
+    valor = re.sub(r"\s+", "", str(valor)).upper()
+    partes = CAMISA_VALIDA.fullmatch(valor)
+    if not partes:
         return None
-    valor = valor.lstrip("0")
-    if not valor or len(valor) > TAMANHO_MAXIMO_CAMISA:
+    prefixo, numero = partes.group(1) or "", partes.group(2).lstrip("0")
+    if not numero or len(numero) > TAMANHO_MAXIMO_CAMISA:
         return None
-    return valor
+    return prefixo + numero
 
 
 def handler(event, context):
