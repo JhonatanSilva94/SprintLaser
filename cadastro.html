@@ -20,6 +20,8 @@
 	<main class="shell">
 		<!-- MUDANÇA: o título grande ("Seu detalhe. Sua chegada.") e o texto de introdução empurravam
 		     o formulário para baixo da tela no celular. Ficou só um título curto, e os campos aparecem logo de cara. -->
+		<!-- EVENTO DUPLO: só aparece com ?e=b na URL (QR code da corrida B). -->
+		<div class="race-badge" id="race-badge" hidden>Corrida B</div>
 		<h1 class="form-title">Preencha seus dados</h1>
 		<section class="form-panel" aria-label="Cadastro do corredor">
 			<form id="registration-form" novalidate>
@@ -50,6 +52,8 @@
 			     Agora é uma confirmação: número da camisa em destaque + nome e tempo,
 			     exatamente como foram salvos, para o corredor conferir. -->
 			<section class="result" id="registration-result" aria-live="polite">
+				<!-- EVENTO DUPLO: "Corrida B · Camisa 150", só com ?e=b. -->
+				<div class="race-badge" id="confirm-race" hidden></div>
 				<p class="result-label">Cadastro confirmado. Seu número de peito:</p>
 				<p class="code" id="confirm-bib"></p>
 				<dl class="result-details">
@@ -118,6 +122,13 @@
 		const nameField = document.querySelector("#runner-name");
 		const engravingValue = document.querySelector("#engraving-value");
 		const submitButton = form.querySelector("button[type=submit]");
+		const confirmRace = document.querySelector("#confirm-race");
+
+		// EVENTO DUPLO: com ?e=b na URL a camisa vai para a API como "B-<número>",
+		// para a corrida B não colidir com a mesma numeração da corrida A.
+		// Qualquer outro valor de ?e é ignorado e a página funciona como sempre.
+		const corridaB = new URLSearchParams(location.search).get("e") === "b";
+		document.querySelector("#race-badge").hidden = !corridaB;
 
 		function atualizarPreviaGravacao() {
 			const nome = nameField.value.trim().toUpperCase();
@@ -190,10 +201,14 @@
 			// corredor veria o erro "já cadastrada" mesmo tendo dado certo.)
 			submitButton.disabled = true;
 			try {
-				const corredor = await cadastrarCorredor(numeroCamisa, nome, tempo);
+				const corredor = await cadastrarCorredor(corridaB ? `B-${numeroCamisa}` : numeroCamisa, nome, tempo);
 				// MUDANÇA: mostra o que a API salvou (já normalizado), e não o que foi digitado.
-				confirmBib.textContent = corredor.numero_camisa;
-				confirmBib.classList.toggle("is-long", corredor.numero_camisa.length >= 4);
+				// EVENTO DUPLO: o "B-" vira o selo "Corrida B" e o número aparece sozinho.
+				const numeroSalvo = corredor.numero_camisa.replace(/^B-/, "");
+				confirmBib.textContent = numeroSalvo;
+				confirmBib.classList.toggle("is-long", numeroSalvo.length >= 4);
+				confirmRace.textContent = `Corrida B · Camisa ${numeroSalvo}`;
+				confirmRace.hidden = !corridaB;
 				confirmName.textContent = corredor.nome;
 				confirmTime.textContent = corredor.tempo;
 				result.classList.add("is-visible");
